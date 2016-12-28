@@ -1,0 +1,94 @@
+{% import "snippets/macro.twig" as macro %}
+{% extends "layouts/base.twig" %} {% block content %}
+	<!-------------------------------->
+	<!--TOP DIVIDER------------------->
+	<!-------------------------------->
+	<section name="TOP DIVIDER">
+		<div class="wrapperdiv divider" style="background-color: white;">
+			<div class="bodycontentdiv" style="max-width: 750px;">
+				<a href="/">HOME</a> / <a href="/blogs/">BLOG</a> / <a href="/{{ post.url }}">{{ post.title }}</a>
+			</div>
+		</div>
+	</section>
+
+
+	<!-------------------------------->
+	<!--POST CONTENT------------------>
+	<!-------------------------------->
+	<section>
+		<div class="content-wrapper {% if device.isDesktop %}container{% else %}container-fluid{% endif %}">
+			<article id="post-{{post.id}}"  id="post-{{post.id}}">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						{% if device.isPhone %}
+							<div><h1>{{ post.title }}</h1></div>
+						{% endif %}
+						<div class='post-content'>{{ post.content }}</div>
+						<hr>
+						<div style="text-align: right;">Posted on {{ post.publishTime | date("F jS Y ") }}</div>
+						<hr>
+						{#<div class="row">
+                            <div class="col-lg-offset-3 col-lg-3 col-md-offset-3 col-md-3 col-sm-offset-3 col-sm-3 col-xs-6">
+                                <a href="{{ store.httpLink }}/posts/{{ post.prev.slug }}" class="btn btn-block btn-default" {% if post.prev==null%}disabled{% endif %} data-uat-key="previous-post">&lt READ PREVIOUS</a>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                                <a href="{{ store.httpLink }}/posts/{{ post.next.slug }}" class="btn btn-block btn-default" {% if post.next==null%}disabled{% endif %} data-uat-key="next-post">READ NEXT &gt</a>
+                            </div>
+                        </div>#}
+					</div>
+				</div>
+			</article>
+		</div>
+	</section>
+	<!-------------------------------->
+	<!--COMMENTS---------------------->
+	<!-------------------------------->
+	<section name="COMMENTS">
+		<div class="wrapperdiv">
+			<div class="bodycontentdiv" style="max-width: 750px;">
+				<div id="disqus_thread"></div>
+				<script type="text/javascript">
+					/* * * CONFIGURATION VARIABLES * * */
+					var disqus_shortname = 'factoryfive';
+
+					/* * * DON'T EDIT BELOW THIS LINE * * */
+					(function() {
+						var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+						dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+						(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+					})();
+				</script>
+				<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+			</div>
+		</div>
+	</section>
+	<!-------------------------------->
+	<!--LINK PANES-------------------->
+	<!-------------------------------->
+	<section name="LINK PANES">
+		<div class="wrapperdiv">
+			<div class="bodycontentdiv">
+				<div class="threeblockpadding onehigh contentpane"></div>
+				{% paginate blogs["events"].posts by 2 (fixedPage = 1) %}
+				{{ macro.draw_post_tile(paginate.results[1]) }}
+				{% endpaginate %}
+				{% paginate blogs["portfolio"].posts by 1 (fixedPage = 1) %}
+				{{ macro.draw_portfolio_tile(paginate.results[0]) }}
+				{% endpaginate %}
+				{% paginate collections['homepage-top-two'].products by 1 (fixedPage = 1) %}
+				{{ macro.draw_product_tile(paginate.results[0]) }}
+				{% endpaginate %}
+			</div>
+		</div>
+	</section>
+
+{% endblock %}
+
+{% block scripts %}
+	{{ 'js/post-detail.js' | assetUrl | scriptTag }}
+{% endblock %}
+{% block stylesheets %}
+	{{ "css/post.css" | assetUrl | stylesheetTag  }}
+    {{ "css/richText.css" | globalAssetUrl | stylesheetTag  }}
+{% endblock %}
+

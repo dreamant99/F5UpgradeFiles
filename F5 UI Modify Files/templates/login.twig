@@ -1,0 +1,26 @@
+{% extends "layouts/base.twig" %}
+{% import "views/predefine.twig" as predefine %}
+{% block page_title %} {{ 'user.login.title' | t }} {% endblock %}
+{% block stylesheets %}
+    {{ "css/login.css" | assetUrl | stylesheetTag }}
+{% endblock %}
+
+{% block scripts %}
+    {{ "js/login.js" | assetUrl | scriptTag }}
+{% endblock %}
+
+{% block content %}
+    <!-------------------------------->
+    <!--TOP DIVIDER-->
+    <!-------------------------------->
+    <section name="TOP DIVIDER">
+        <div class="wrapperdiv divider" style="background-color: white;">
+            <div class="bodycontentdiv" style="max-width: 750px;">
+            </div>
+        </div>
+    </section>
+    <div class="{% if device.isDesktop %}container{% else %}container-fluid{% endif %} login">
+        {{ predefine.loginForm(_context) }}
+    </div>
+{% endblock %}
+

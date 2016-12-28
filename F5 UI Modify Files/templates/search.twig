@@ -1,0 +1,162 @@
+{% import "snippets/macro.twig" as macro %}
+{% extends "layouts/base.twig" %}
+{% block page_title %}SEARCH{% endblock %}
+{% set show_multi_currency = true %}
+{% block content %}
+    <!-------------------------------->
+    <!--TOP DIVIDER-->
+    <!-------------------------------->
+    <section name="TOP DIVIDER">
+        <div class="wrapperdiv divider" style="background-color: white;">
+            <div class="bodycontentdiv">
+                <a href="/">HOME</a> / SEARCH / <a href="/search/?searchWords={{ search.searchWords }}">{{ search.searchWords | upper }}</a>
+            </div>
+        </div>
+    </section>
+    <div class="content-wrapper">
+        <div class="{% if device.isDesktop %}container{% else %}container-fluid{% endif %}">
+            <input id="product_total_count" type="hidden" value="{{ search.results['products'].resultsCount }}">
+            <input id="post_total_count" type="hidden" value="{{ search.results['posts'].resultsCount }}">
+            <input id="page_total_count" type="hidden" value="{{ search.results['pages'].resultsCount }}">
+            <input id="keyword" type="hidden" value="{{ search.searchWords }}">
+            <div class="search-page">
+                {% if device.isPhone %}
+                    <div class="sub-menu-list-phone">
+                        <div class="search-word">
+                           {{ 'search.searchwordfor' | t }}&nbsp;<span>&quot;{{ search.searchWords }}&quot;</span>
+                        </div>
+                        <div class="search-menu">
+                            <span class="search-menu-item selected" data-menu-type="0">{{ 'search.title.all' | t }}
+                                ({{ search.totalCount }})
+                            </span>
+
+                            <div class="search-drop-down-icon">
+                                <i class="icon icon-downwardarrow"></i>
+                            </div>
+                            <div class="search-drop-down-content">
+                                <div class="search-menu-item search-drop-down-item search-menu-item-product"
+                                     data-menu-type="1">{{ 'search.title.product' | t }}
+                                    ({{ search.results['products'].resultsCount }})
+                                </div>
+                                <div class="search-menu-item search-drop-down-item search-menu-item-article"
+                                     data-menu-type="2">{{ 'search.title.article' | t }}
+                                    ({{ search.results['posts'].resultsCount }})
+                                </div>
+                                <div class="search-menu-item search-drop-down-item search-menu-item-page"
+                                     data-menu-type="3">{{ 'search.title.page' | t }}
+                                    ({{ search.results['pages'].resultsCount }})
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="sub-menu-list">
+                       <div class="search-word">
+                            {{ 'search.searchwordfor' | t }}&nbsp;<span>&quot;{{ search.searchWords }}&quot;</span>
+                        </div>
+                        <div class="search-menu">
+                            <span class="search-menu-item search-menu-item-all selected"
+                                  data-menu-type="0">{{ 'search.title.all' | t }}&nbsp;({{ search.totalCount }})</span>
+                            <span class="search-menu-item search-menu-item-product"
+                                  data-menu-type="1">{{ 'search.title.product' | t }}&nbsp;({{ search.results['products'].resultsCount }})
+                            </span>
+                            <span class="search-menu-item search-menu-item-article"
+                                  data-menu-type="2">{{ 'search.title.article' | t }}&nbsp;({{ search.results['posts'].resultsCount }})
+                            </span>
+                            <span class="search-menu-item search-menu-item-page"
+                                  data-menu-type="3">{{ 'search.title.page' | t }}&nbsp;({{ search.results['pages'].resultsCount }})
+                            </span>
+                        </div>
+                        <hr class="search-pad-hr">
+                    </div>
+                {% endif %}
+                <div class="search-page-main">
+                    {% if search.results['products'].resultsCount > 0 %}
+                    <div class="search-products">
+                        <div class="title">
+                            <div class="color-block"></div>{{ 'search.title.product' | t }}
+                            ({{ search.results['products'].resultsCount }})
+                        </div>
+                        {% if search.results['products'].resultsCount >0 %}
+                            <div class="row product-list-items img-container">
+                                {{ macro.product_list_product(store, search.results['products'].results) }}
+                            </div>
+                        {% endif %}
+                        <div class="show-all show-all-products" data-menu-type="1">
+                            {{ 'search.show.all.products' | t }}({{ search.results['products'].resultsCount }})
+                            <i class="icon icon-downwardarrow"></i>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if search.results['posts'].resultsCount > 0 %}
+                    <div class="search-articles">
+                        <div class="title">
+                            <div class="color-block"></div>{{ 'search.title.article' | t }}
+                            ({{ search.results['posts'].resultsCount }})
+                        </div>
+                        <div class="post-items">
+                            {{ macro.post_list_post(store, search.results['posts'].results) }}
+                        </div>
+                        <div class="show-all show-all-posts" data-menu-type="2">
+                            {{ 'search.show.all.posts' | t }}({{ search.results['posts'].resultsCount }})
+                            <i class="icon icon-downwardarrow"></i>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if search.results['pages'].resultsCount > 0 %}
+                    <div class="search-pages">
+                        <div class="title">
+                            <div class="color-block"></div>{{ 'search.title.page' | t }}
+                            ({{ search.results['pages'].resultsCount }})
+                        </div>
+                        <div class="page-items">
+                            {{ macro.page_list_page(store, search.results['pages'].results) }}
+                        </div>
+                        <div class="show-all show-all-pages" data-menu-type="3">
+                            {{ 'search.show.all.pages' | t }}({{ search.results['pages'].resultsCount }})
+                            <i class="icon icon-downwardarrow"></i>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!-- load more -->
+                    <div class="load-more load-more-product">
+                        <i class="icon icon-theme3refrash load-more-icon"></i>
+                        <a class="load-more-text" href="javascript:void(0);">{{ 'productlist.loadmore' | t }}</a>
+                    </div>
+                    <div class="load-more load-more-post">
+                        <i class="icon icon-theme3refrash load-more-icon"></i>
+                        <a class="load-more-text" href="javascript:void(0);">{{ 'productlist.loadmore' | t }}</a>
+                    </div>
+                    <div class="load-more load-more-page">
+                        <i class="icon icon-theme3refrash load-more-icon"></i>
+                        <a class="load-more-text" href="javascript:void(0);">{{ 'productlist.loadmore' | t }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# for ajax search #}
+    <script id="products_template" type="text/x-handlebars-template">
+        {{ macro.product_list_template() }}
+    </script>
+
+    <script id="posts_template" type="text/x-handlebars-template">
+        {{ macro.post_list_template() }}
+    </script>
+
+    <script id="pages_template" type="text/x-handlebars-template">
+        {{ macro.page_list_template() }}
+    </script>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ "css/search.css" | assetUrl | stylesheetTag }}
+{% endblock %}
+{% block scripts %}
+    <script>
+        var searchWords = "{{ search.searchWords }}";
+    </script>
+    {{ "js/search.js" | assetUrl | scriptTag }}
+{% endblock %}

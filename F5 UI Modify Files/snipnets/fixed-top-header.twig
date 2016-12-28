@@ -1,0 +1,28 @@
+{#################### Fixed top header (only for mobile) ###################}
+{% if not device.isDesktop %}
+<div class="wrapperdiv" style="height: 50px;">
+</div>
+    <div class="fixed-top-header">
+        <div class="top-header-wrapper">
+            <div class="header-left">
+                <div class="side-menu-trigger pull-left"><i class="icon icon-menu" style="color: white;"></i></div>
+            </div>
+
+            <div class="header-middle text-center">
+                <form data-uat-key="fp-search-form" method="get" action="{{ store.httpLink }}/search/"
+                      role="search" class="search-form">
+                    <div class="search-wrapper">
+                        <input type="search" class="search-input" name="searchWords">
+                        <span data-uat-key="fp-search-button" class="icon icon-search" type="submit"></span>
+                    </div>
+                </form>
+            </div>
+
+            <div class="header-right">
+                <a class="cart-global pull-right" data-uat-key="fp-cart-link-m" href="{{ store.httpLink }}/cart">
+                    <i class="icon icon-shoppingcart"></i><span class="cart-text">(<span class="cart-global-item-count" data-uat-key="fp-cart-count">{{ CartItemCount }}</span>)</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}

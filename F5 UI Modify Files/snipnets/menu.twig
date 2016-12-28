@@ -1,0 +1,141 @@
+<div class="home-menu">
+<div class="{% if device.isDesktop %}container{% endif %}">
+    <nav class="main">
+        <ul class="horizontal unstyled clearfix">
+
+            {# my account link for pad #}
+            {% if device.isPad %}
+                <li class="dropdown-head">
+                    {% if customer.isLoggedIn %}
+                        <a href="#" class="">
+                            <span class="account-text">{{ 'account.hi' | t }} {{ customer.displayName }}</span><i class="icon icon-rightwardarrow"></i>
+                        </a>
+                        <ul class="dropdown">
+                            <li class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+                                <a href="{{ store.httpsLink }}/my/account" data-uat-key="sidemenu-profile">
+                                    &nbsp;{{ 'common.label.myAccount' | t }}
+                                </a>
+                            </li>
+                            <li class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+                                <a data-uat-key="sidemenu-logout-link" href="{{ store.httpsLink }}/logout">
+                                    {{ 'common.label.logout' | t }}
+                                </a>
+                            </li>
+                        </ul>
+                    {% else %}
+                        <a href="{{ store.httpsLink }}/login" class="">
+                            <span>{{ 'common.label.login' | t }} / {{ 'common.label.signup' | t }}</span>
+                        </a>
+                    {% endif %}
+                </li>
+            {% endif %}
+
+            {% if device.isPad %}
+            {% set brand = themeOptions['occ_eshop_brand'] %}
+            {% if menuSets[brand].hasItems %}
+                {% for item in menuSets[brand].menuItems %}
+                    <li data-uat-key="fp-menu-{{ item.title }}" class="{% if item.hasChild %}dropdown-head{% endif %} {{ item.class }}">
+                        <a href="{% if device.isDesktop or (device.isPad and not item.hasChild) %}{{ item.link }}{% else %}#{% endif %}" target="{{ item.target }}">
+                            <span>{{ item.title }}</span>
+                            {% if item.hasChild %}
+                                <i class="icon {% if device.isDesktop %}icon-downwardarrow{% else %}icon-rightwardarrow{% endif %}"></i>
+                            {% endif %}
+                        </a>
+                        {% if item.hasChild %}
+                            <ul class="dropdown {% if themeOptions['anw-menu-' ~ item.id ~ '-enable'] %}products{% endif %}">
+                                <div class="{% if device.isDesktop %}container{% endif %} img-container" data-ratio="0.75">
+
+                                {% if device.isPad %}
+                                    <li class="col-xs-4 col-sm-3 col-md-3 col-lg-2" data-uat-key="fp-inner-menu-{{ item.title }}">
+                                        {% if themeOptions['anw-menu-' ~ item.id ~ '-enable'] %}
+                                            <a href="{{ item.link }}" target="{{ item.target }}">
+                                                <div class="img-wrapper">
+                                                    <i class="icon icon-5x icon-viewall"></i>
+                                                </div>
+                                                <p>{{ item.title }}</p>
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ item.link }}" target="{{ item.target }}">{{ item.title }}</a>
+                                        {% endif %}
+                                    </li>
+                                {% endif %}
+
+                                {% for subitem in item.children %}
+                                    <li class="col-xs-4 col-sm-3 col-md-3 col-lg-2" data-uat-key="fp-menu-{{ subitem.title }}">
+                                        {% if themeOptions['anw-menu-' ~ item.id ~ '-enable'] %}
+                                        <a href="{{ subitem.link }}" target="{{ subitem.target }}">
+                                            <div class="img-wrapper">
+                                                <img src="{% if themeOptions['anw-menu-submenu-img-' ~ subitem.id]['url'] %}{{ themeOptions['anw-menu-submenu-img-' ~ subitem.id]['url'] }}{% else %}{{  default_thumbnail_src }}{% endif %}" alt="{{ subitem.title }}">
+                                            </div>
+                                            <p>{{ subitem.title }}</p>
+                                        </a>
+                                        {% else %}
+                                            <a href="{{ subitem.link }}" target="{{ subitem.target }}">{{ subitem.title }}</a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                                </div>
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            {% endif %}
+            {% endif %}
+
+            {# more info for pad(footer on PC) #}
+            {% if device.isPad %}
+                <li data-uat-key="fp-menu-more-info" class="dropdown-head">
+                    <a href="javascript:void(0);">
+                        <span>{{ 'menu.moreinfo' | t }}</span>
+                        <i class="icon icon-rightwardarrow"></i>
+                    </a>
+                    <ul class="dropdown more-info">
+                        {% for index in range(1, 6) %}
+                            {% if themeOptions['anw-footer-section' ~ index ~ '-enable'] %}
+                                <li class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+                                    <a href="#">
+                                        <p class="more-info-title">{{ themeOptions['anw_footer_section' ~ index ~ '_sectionname'] }}</p>
+                                    </a>
+                                    {% if themeOptions['anw_footer_section' ~ index ~ '_text_1']|length > 0 %}
+                                        <a href="{{ themeOptions['anw_footer_section' ~ index ~ '_url_1'] }}" title="{{ themeOptions['anw_footer_section' ~ index ~ '_url_1'] }}">
+                                            <p class="more-info-item">{{ themeOptions['anw_footer_section' ~ index ~ '_text_1'] }}</p>
+                                        </a>
+                                    {% endif %}
+                                    {% if themeOptions['anw_footer_section' ~ index ~ '_text_2']|length > 0 %}
+                                        <a href="{{ themeOptions['anw_footer_section' ~ index ~ '_url_2'] }}" title="{{ themeOptions['anw_footer_section' ~ index ~ '_url_2'] }}">
+                                            <p class="more-info-item">{{ themeOptions['anw_footer_section' ~ index ~ '_text_2'] }}</p>
+                                        </a>
+                                    {% endif %}
+                                    {% if themeOptions['anw_footer_section' ~ index ~ '_text_3']|length > 0 %}
+                                         <a href="{{ themeOptions['anw_footer_section' ~ index ~ '_url_3'] }}" title="{{ themeOptions['anw_footer_section' ~ index ~ '_url_3'] }}">
+                                             <p class="more-info-item">{{ themeOptions['anw_footer_section' ~ index ~ '_text_3'] }}</p>
+                                         </a>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+
+                {% if show_multi_currency %}
+                    {% include ['snippets/multi-currency.twig' | m] %}
+                {% endif %}
+
+                {% if themeOptions['anw-enable-header-social'] %}
+                    <li data-uat-key="fp-menu-social" class="social">
+                        {% for index in range(1, 5) %}
+                            {% if themeOptions['anw-header-social-type-' ~ index].icon | length > 0  %}
+                                <a class="header-icon" data-uat-key="fp-social-link-{{ index }}" href="{{ themeOptions['anw-header-social-account-' ~ index] }}">
+                                    <i class="icon {{ themeOptions['anw-header-social-type-' ~ index].icon }}"></i>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </li>
+                {% endif %}
+
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+</div>
+{#{% endif %}#}

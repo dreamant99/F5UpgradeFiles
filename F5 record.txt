@@ -1,0 +1,72 @@
+﻿layout
+          base.twig  done
+assets
+          common.less  done
+          collection.less  done
+          product.less done
+          search.less  done
+          post.less    done 
+          cart.less    done	 
+          collection.js  done
+          common.js     done   
+          product.js   done
+          instafeed.min.js   -A  
+          
+tempalte
+          homepage.twig   done
+          product.twig   done
+          collection.twig  done
+          post.twig  done
+          blog.twig  done
+          page.twig   done
+          search.twig  done
+          login.twig  done
+          login-moblie.twig done
+          signup.twig	done
+          signup-mobile.twig done
+          reset-password.twig done 
+          cart.twig done
+          collection-grouped.twig       -A     一定要新建collection类型的文件！！！
+          page-portfolio.twig     -A  
+          
+snippet
+	 macro.twig  	done
+	 header.twig   done
+	 footer.twig  done
+	 menu.twig   done
+	 menu-phone.twig done
+	 multi-currency.twig  done
+	 cart-detail.twig done
+	 fixed-top-header.twig  done
+
+widgets
+
+	 recommended-product.twig    
+locals
+	
+	en_US.loc
+
+
+问题：
+1. checkout页面不加载logo
+解决方法：在header.twig L38
+2. Click to username, redirect to myprofile， not myaccount
+解决方法：L19 <a href="{{ store.httpsLink }}/my/profile"修改为<a href="{{ store.httpsLink }}/my/accout"
+3.Apply sales price list, product image and some other images on this page will not show
+
+	
+
+注意： 
+
+	 先修改less,再js，再twig
+
+search.twig中 search-twig
+en_us 修改大小写 login register product.title.all等 46-48 26-28
+     search.searchWords search.title.product search.title.article search.title.all 
+     cart.
+
+login界面，封装在predefine.twig Don't have an account? Click here to register 无法加载
+
+cart.less product-desc中删除top:40%;product-normal-price中去掉属性height:50%
+
+footer.twig中Line20 <div><a href="/blogs/events">F5 Events</a></div> collection->blogs

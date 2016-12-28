@@ -1,0 +1,15 @@
+﻿1. footer右下边字体颜色不对
+应为：#979797而不是#bbbbbb
+2.搜索结果显示页面字体颜色不正确
+livepreview.less
+
+5.checkout页面没有logo
+
+product.js variantChangeAction changed
+header.twig <img src="{{ themeOptions['occ_eshop_custom_logo'] }}" class="custom-logo"
+                                 alt="{{ store.title }}”>
+search.js        var resizeImageTimeout = setTimeout(function () {
+            resizeImage(".img-container");
+            initImageHolder(".img-container");
+            initLazyImage(".img-container");
+        }, 500);

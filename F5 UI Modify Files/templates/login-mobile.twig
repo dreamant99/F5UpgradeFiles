@@ -1,0 +1,15 @@
+{% extends "layouts/base.twig" %}
+{% block page_title %} {{ 'user.login.title' | t }} &nbsp; {{ 'user.signup.title' | t }} {% endblock %} 
+{% block stylesheets %}
+	{{ "css/login.css" | assetUrl | stylesheetTag  }}
+{% endblock %}
+{% block scripts %}
+	{{ "js/login.js" | assetUrl | scriptTag  }}
+    {% if store.channelAccountType == 'mobile' %}
+      {{ "js/mobile-account.js" | globalAssetUrl | scriptTag }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+	{% include 'snippets/login-signup-mobile.twig' with {'isLogin': true} %}
+{% endblock %}

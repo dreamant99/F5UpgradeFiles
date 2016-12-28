@@ -1,0 +1,75 @@
+<!-------------------------------->
+<!--HEADER-->
+<!-------------------------------->
+<section name="HEADER">
+    <div class="wrapperdiv">
+        <div class="bodycontentdiv">
+            <div class="lateral-left hideontiny">
+                <form data-uat-key="fp-search-form" method="get" action="{{ store.httpLink }}/search/" role="search" class="search-form">
+                    <div class="search-wrapper">
+                        <input type="search" class="searchbox" name="searchWords" autocomplete="off" placeholder="SEARCH...">
+                        <span data-uat-key="fp-search-button" class="icon icon-search" type="submit"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="lateral-right hideontiny" style="text-align: right;">
+                <div><a href="/pages/newsletter">JOIN OUR NEWSLETTER</a><br/></div>
+                <div>
+                    {% if customer.id %}
+                        {#{{ 'account.hi' | t }} <a href="{{ store.httpsLink }}/my/profile" data-uat-key="fp-myaccount-link">{% if customer.firstName %}{{ customer.firstName }}{% else %}{{ customer.email }}{% endif %}</a> /#}
+                        {{ 'account.hi' | t }} <a href="{{ store.httpsLink }}/my/accout" data-uat-key="fp-myaccount-link">{% if customer.firstName %}{{ customer.firstName }}{% else %}{{ customer.email }}{% endif %}</a> /
+                        <a href="{{ store.httpsLink }}/logout" data-uat-key="fp-logout-link">{{ 'common.label.logout' | t }}</a>
+                    {% else %}
+                        <a data-uat-key="fp-login-link" href="{{ store.httpsLink }}/login">{{ 'common.label.login' | t }}</a> &nbsp;|&nbsp;
+                        <a data-uat-key="fp-signup-link" href="{{ store.httpsLink }}/signup">{{ 'common.label.signup' | t }}</a>
+                    {% endif %}
+                </div>
+                {% if show_multi_currency %}
+                    <div>{% include ['snippets/multi-currency.twig'] %}</div>
+                {% endif %}
+                <!-- cart icon -->
+                <a class="cart-global" data-uat-key="fp-cart-link" href="{{ store.httpLink }}/cart">
+                    <i class="icon icon-shoppingcart"></i><span class="cart-text">(<span class="cart-global-item-count" data-uat-key="fp-cart-count"></span>)</span>
+                </a>
+            </div>
+            <div class="central">
+                <div style="padding: 10px; padding-bottom: 20px">
+                    <a href="/">
+                        {% if themeOptions['occ_eshop_use_custom_logo'] %}
+                            <img src="{{ themeOptions['occ_eshop_custom_logo'] }}" class="custom-logo" alt="{{ store.title }}”>
+                        {% else %}
+                            <img src="//eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2016/03/F5logo_2016_3.png" class="custom-logo" alt="Factory Five">
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="hideontiny">
+                    <ul>
+                        <li class="productbg"><a href="{{ store.httpLink }}/collections/all-grouped" class="whitelink">SHOP</a></li>
+                        <li class="eventbg"><a href="{{ store.httpLink }}/blogs" class="whitelink">BLOG</a></li>
+                        <li class="portfoliobg"><a href="{{ store.httpLink }}/pages/portfolio" class="whitelink">PORTFOLIO</a></li>
+                        <li class="workshopbg"><a href="{{ store.httpLink }}/pages/workshop" class="whitelink">WORKSHOP</a></li>
+                        <li class="aboutusbg"><a href="{{ store.httpLink }}/pages/about" class="whitelink">ABOUT US</a></li>
+                        <li class="instagrambg"><a href="http://instagram.com/factory5" class="whitelink" target="_new">INSTAGRAM</a></li>
+                        <li class="facebookbg"><a href="https://www.facebook.com/pages/Factory-5/129909687076849" target="_new" class="whitelink">FACEBOOK</a></li>
+                    </ul>
+                </div>
+                <div class="showontiny">
+                    <ul id="collapsingMenu">
+                        <li class="greybg" style="width: 220px"><a title="open or close this section" href="#">MENU <i class="icon icon-menu"></i></a>
+                            <ul style="display: none;">
+                                <li class="productborder"><a href="{{ store.httpLink }}" class="blacklink">HOME</a></li>
+                                <li class="productbg"><a href="{{ store.httpLink }}/collections/all-grouped" class="whitelink">SHOP</a></li>
+                                <li class="eventbg"><a href="{{ store.httpLink }}/blogs" class="whitelink">BLOG</a></li>
+                                <li class="portfoliobg"><a href="{{ store.httpLink }}/pages/portfolio" class="whitelink">PORTFOLIO</a></li>
+                                <li class="workshopbg"><a href="{{ store.httpLink }}/pages/workshop" class="whitelink">WORKSHOP</a></li>
+                                <li class="aboutusbg"><a href="{{ store.httpLink }}/pages/about-us" class="whitelink">ABOUT US</a></li>
+                                <li class="instagrambg"><a href="http://instagram.com/factory5" class="whitelink">INSTAGRAM</a></li>
+                                <li class="facebookbg"><a href="https://www.facebook.com/pages/Factory-5/129909687076849" class="whitelink">FACEBOOK</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,525 @@
+{% macro product_cardview(product, store, index, self_lazy_load) %}
+    {% if product %}
+        {% set product_image = product.featuredImage | imgUrl('medium') %}
+        {% set has_image = product_image|length > 0 %}
+        <div class="product-{{ product.id }} product-view-item" data-uat-key="prods-{{ index }}">
+            <a href="{{ store.httpLink }}/{{ product.url }}">
+                <div class="img-wrapper border">
+                    {% if product.standardPrice and product.salesPrice and product.standardPrice > product.salesPrice %}
+                    <div class="callout mini style2">
+                        <div class="inner success-bg">
+                            <div class="inner-text">
+                                {{ 'product.callout.sale' | t }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <img data-uat-key="prods-img-{{ index }}" {% if has_image %} {% if self_lazy_load == true %}
+                         data-lazy="{{ product_image }}" {% else %}
+                         data-original="{{ product_image }}" {% endif %} {% endif %}">
+                </div>
+                <div class="caption">
+                    <div data-uat-key="prods-name-{{ index }}"
+                         class="product-name ellipsis x1">{{ product.title }}</div>
+
+                    <p class="product-price-grid">
+                        {% if product.standardPrice and product.salesPrice and product.standardPrice >= product.salesPrice %}
+                            <del>
+                                {{ store.currency.symbol }}{{ product.standardPrice | priceFormat }}
+                            </del>
+                        {% endif %}
+                    <span class="product-price"
+                          data-uat-key="prods-amountins-{{ index }}">
+                        {{ store.currency.symbol }}{% if product.salesPrice %}{{ product.salesPrice | priceFormat }}{% endif %}
+                    </span>
+                    </p>
+                </div>
+            </a>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{#{% macro collection_title(collection, product_num) %}#}
+    {#<div class="header mobile-header smallest full" data-uat-key="prods-catalog">#}
+        {#{{ collection }}&nbsp;&nbsp;#}
+        {#<span data-uat-key="prods-count-result">({{ product_num }} {% if product_num>1 %}{{ 'products.countResult'|t }} {% else %}{{ 'products.singleCountResult'|t }}{% endif %})</span>#}
+    {#</div>#}
+{#{% endmacro %}#}
+
+{#{% macro search_title(search_words, product_num) %}#}
+    {#<div class="header mobile-header smallest full" data-uat-key="prods-catalog">#}
+        {#{{ 'products.searchTitleBefore' | t | upper }}{{ search_words }}{{ 'products.searchTitleAfter' | t }}&nbsp;&nbsp;#}
+        {#<span data-uat-key="prods-count-result">({{ product_num }} {% if product_num>1 %}{{ 'products.countResult'|t }} {% else %}{{ 'products.singleCountResult'|t }}{% endif %})</span>#}
+    {#</div>#}
+{#{% endmacro %}#}
+
+{% macro order_by(orderbys, selected) %}
+    <dl class="dl-horizontal" data-uat-key="prods-orderby">
+        {% for key, value in orderbys %}
+            <dt>{{ key | t }}</dt>
+            <dd>
+                {% for orderby in value %}
+                    <div class="radio">
+                        <label class="{% if selected == orderby.id %}checked{% endif %}"
+                               data-uat-key="orderby-{{ orderby.id }}">
+                            <input name="orderby" type="radio"
+                                   {% if selected == orderby.id %}checked="" {% endif %}
+                                   value="{{ orderby.id }}">{{ orderby.name | t }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </dd>
+        {% endfor %}
+    </dl>
+{% endmacro %}
+
+{% macro common_paginate(storeUrl, pagination) %}
+    {% if pagination.totalPages > 1 %}
+    <div class="product-pagination">
+        <ul class="pagination">
+            <li>
+                {% if pagination.hasPrevious %}
+                    <a href="{{ storeUrl }}/{{ pagination.previous.url }}" data-uat-key="prods-prev">&laquo;</a>
+                {% endif %}
+            </li>
+
+            {% for part in pagination.parts %}
+                <li class="{% if part.isCurrent %} active {% endif %}">
+                    {% set pageDiff = part.title-pagination.currentPage %}
+                    {% if part.isLink and pageDiff<3 and pageDiff>-3 %}
+                        <a href="{{ storeUrl }}/{{ part.url }}"
+                           data-uat-key="prods-page-{{ part.title }}">{{ part.title }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+
+            <li>
+                {% if pagination.hasNext %}
+                    <a href="{{ storeUrl }}/{{ pagination.next.url }}" data-uat-key="prods-prev">&raquo;</a>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro view_more(siteurl, collection) %}
+    <a href="{{ siteurl }}/collections/{{ collection }}" class="view-more"><span
+                class="view-more-text">{{ "common.view.more" | t }}</span>&nbsp;&nbsp;<i
+                class="icon icon-rightwardarrow"></i></a>
+{% endmacro %}
+
+{% macro footer_section(theme_options, index) %}
+    <ul class="submenu info-list">
+        {% if theme_options['anw_footer_section' ~ index ~ '_text_1']|length > 0 %}
+            <li><a href="{{ theme_options['anw_footer_section' ~ index ~ '_url_1'] }}"
+                   title="{{ theme_options['anw_footer_section' ~ index ~ '_url_1'] }}">{{ theme_options['anw_footer_section' ~ index ~ '_text_1'] }}</a>
+            </li>
+        {% endif %}
+        {% if theme_options['anw_footer_section' ~ index ~ '_text_2']|length > 0 %}
+            <li><a href="{{ theme_options['anw_footer_section' ~ index ~ '_url_2'] }}"
+                   title="{{ theme_options['anw_footer_section' ~ index ~ '_url_2'] }}">{{ theme_options['anw_footer_section' ~ index ~ '_text_2'] }}</a>
+            </li>
+        {% endif %}
+        {% if theme_options['anw_footer_section' ~ index ~ '_text_3']|length > 0 %}
+            <li><a href="{{ theme_options['anw_footer_section' ~ index ~ '_url_3'] }}"
+                   title="{{ theme_options['anw_footer_section' ~ index ~ '_url_3'] }}">{{ theme_options['anw_footer_section' ~ index ~ '_text_3'] }}</a>
+            </li>
+        {% endif %}
+    </ul>
+{% endmacro %}
+
+{% macro error_page(class,btnLink,imgName,sectionArray) %}
+    <div class={{ class }}>
+        <img src="{{ ('images/error/' ~ imgName ~ '.png') | globalAssetUrl }}">
+        {% for section in sectionArray %}
+            <div>{{ section }}</div>
+        {% endfor %}
+        <a href="{{ btnLink }}" class="btn btn-primary" data-uat-key="take-me-home-btn">{{ 'error.takeMeHome' | t }}</a>
+    </div>
+{% endmacro %}
+
+{% macro empty_page(class,btnLink,imgName,buttonName,sectionArray) %}
+    <div class={{ class }}>
+        <img src="{{ ('images/empty/' ~ imgName ~ '.png') | globalAssetUrl }}">
+        {% for section in sectionArray %}
+            <div>{{ section }}</div>
+        {% endfor %}
+        {% if buttonName|length>0 %}
+            <a href="{{ btnLink }}" class="btn btn-primary" data-uat-key="take-me-home-btn">{{ buttonName }}</a>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro product_list_product(store, products) %}
+    {% for product in products %}
+        {% set product_image = product.featuredImage | imgUrl('medium') %}
+        {% set has_image = product_image|length > 0 %}
+        <div class="col-xs-6 col-md-3 col-sm-4 col-lg-3 product-list-item" data-uat-key="prods-{{ loop.index }}">
+            <a href="{{ store.siteUrl }}/{{ product.url }}">
+                <div class="img-wrapper border">
+                    <img data-uat-key="prods-img-{{ loop.index }}"
+                         {% if has_image %}data-original="{{ product_image }}"{% else %} src="{{ default_thumbnail_src }}" {% endif %}>
+                </div>
+                <div class="product-desc">
+                    <div class="product-name ellipsis x1"
+                         data-uat-key="prods-name-{{ loop.index }}">{{ product.title }}</div>
+                    <div class="product-price">
+                        <del>
+                            {% if product.standardPrice and product.salesPrice and product.standardPrice > product.salesPrice %}
+                                {{ store.currency.symbol }}{{ product.standardPrice | priceFormat }}
+                            {% endif %}
+                        </del>
+                        <span data-uat-key="prods-amountins-{{ loop.index }}">{{ store.currency.symbol }}{% if product.salesPrice %}{{ product.salesPrice | priceFormat }}{% endif %}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+{% endmacro %}
+{% macro product_list_template() %}
+    {% raw %}
+        {{#each products }}
+        <div class="col-xs-6 col-md-3 col-sm-4 col-lg-3 product-list-item" data-uat-key="prods-{{ @index }}">
+            <a href="{{ siteUrl url }}">
+                <div class="img-wrapper border">
+                    <img data-uat-key="prods-img-{{ @index }}" data-original="{{ imgUrl featuredImage 'medium' }}">
+                </div>
+                <div class="product-desc">
+                    <div class="product-name ellipsis x1" data-uat-key="prods-name-{{ @index }}">{{{ title }}}</div>
+                    <div class="product-price">
+                        <del>
+                            {{#showSalesStamp standardPrice salesPrice }}
+                                {{ priceFormatter standardPrice }}
+                            {{/showSalesStamp}}
+                        </del>
+                        <span data-uat-key="prods-amountins-{{ @index }}">{{ store.currency.symbol }}{{priceFormatter salesPrice }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {{/each}}
+    {% endraw %}
+{% endmacro %}
+{% macro post_list_template() %}
+    {% raw %}
+        {{#each posts }}
+        <div class="post-item">
+            <div class="header ellipsis x1">{{ title }}</div>
+            <div class="post-meta">
+                ({{t 'category.by' }}&nbsp;{{ author }}&nbsp;{{t 'category.on' }}&nbsp;
+                <time>{{ publishTime }}</time>
+                )
+            </div>
+            <div class="post-content-text">
+                {{#if image }}{{ image }}{{/if}}{{ excerpt }}
+            </div>
+            <div class="post-view-more-wrapper">
+                <a href="{{ siteUrl url }}" class="post-view-more">
+                    {{t 'search.viewmore' }} >>
+                </a>
+            </div>
+        </div>
+        {{/each}}
+    {% endraw %}
+{% endmacro %}
+{% macro post_list_post(store, posts) %}
+    {% for post in posts %}
+        <div class="post-item">
+            <div class="header ellipsis x1 search-post-title">{{ post.title }}</div>
+            <div class="post-meta">
+                (
+                {{'category.by' | t  }} <span>{{ post.author }}</span> {{'category.on' | t }} <time>{{ post.publishTime }}</time>
+                )
+            </div>
+            <div class="post-content-text">
+                {% if post.image %} {{ post.image }}{% endif %}{{ post.excerpt }}
+            </div>
+            <div class="post-view-more-wrapper">
+                <a href="{{ store.siteUrl }}/{{ post.url }}" class="post-view-more">
+                    {{ 'search.viewmore' | t }} >>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}
+{% macro page_list_template() %}
+    {% raw %}
+    {{#each pages }}
+        <div class="page-item">
+            <div class="header ellipsis x1">{{ title }}</div>
+            <div class="post-content-text">
+                {{{  content }}}
+            </div>
+            <div class="post-view-more-wrapper">
+                <a href="{{siteUrl 'pages/'}}{{slug}}" class="post-view-more">
+                    {{t 'search.viewmore' }} >>
+                </a>
+            </div>
+        </div>
+    {{/each }}
+    {% endraw %}
+{% endmacro %}
+
+{% macro page_list_page(store, pages) %}
+    {% for page in pages %}
+        <div class="page-item">
+            <div class="header ellipsis x1">{{ page.title }}</div>
+            <div class="post-content-text">
+                {{ page.content }}
+            </div>
+            <div class="post-view-more-wrapper">
+                <a href="{{ store.siteUrl }}/pages/{{ page.slug }}" class="post-view-more">
+                    {{ 'search.viewmore' | t }} >>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+
+{% macro category_tree(categories, categoryFilter, level) %}
+    {% for category in categories %}
+        {% set isSelect = (categoryFilter == category.layer) %}
+        <li class="cat-item {% if isSelect %} curSelectedNode {% endif %} cat-item-{{ category.layer }} level-{{ level }}" data-layer="{{ category.layer }}">
+            {% set isopen = categoryFilter starts with category.layer %}
+            <a>
+            {% if level != 0  %}
+                {% if isopen %}
+                    <i class="icon icon-downwardarrow"></i>
+                {% else %}
+                    <i class="icon icon-rightwardarrow"></i>
+                {% endif %}
+            {% endif %}
+            {{ category.title }}
+            </a>
+            {% if isopen %}
+                <ul class="category-children">
+                    {% set addlevel = level + 1 %}
+                    {{ _self.category_tree(category.subCategories, categoryFilter, addlevel) }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}
+
+
+{% macro draw_star_product(collection, product, symbol) %}
+    <div class ="twowide twohigh contentpane">
+        <div class="twowide twohigh img-lazy" data-original="{{ collection.image  }}">
+            <div class="panetransparency_high">
+                <div class="paneoverlay">
+                    <div><a href="{{ product.url }}" class="largepanetitle productbg productborder">
+                            {{ collection.description }}
+                        </a></div>
+                    <div style="height: 25px;"></div>
+                    <div class="blacklinks">
+                        <a href="{{ product.url }}" class="largepanebutton">
+                            {{ symbol }}{{ product.salesPrice }}  BUY NOW
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_collection_tile(collection) %}
+    <div class="twowide onehigh contentpane">
+        <div class="twowide onehigh img-lazy" data-original="{{ collection.image  }}">
+            <div class="panetransparency_high">
+                <div class="paneoverlay">
+                    <div><a href="{{ collection.url }}" class="mediumpanetitle productbg productborder">{{ collection.description }}</a></div>
+                    <div style="height: 25px;"></div>
+                    <div class="blacklinks"><a href="{{ collection.url }}" class="largepanebutton">SHOP NOW</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_product_tile(product, symbol) %}
+    <div class="onewide onehigh contentpane">
+        <div class="onewide onehigh img-lazy" data-original="{{ product.images[0] | imgUrl('medium') }}">
+            <div class="panetransparency_high">
+                <div class="paneoverlay">
+                    <div><a href="/{{ product.url }}" class="mediumpanetitle productbg productborder">
+                            {{ product.title }}
+                        </a></div>
+                    <div style="height: 25px;"></div>
+                    <div class="blacklinks"><a href="/{{ product.url }}" class="largepanebutton">
+                            {{ symbol }}{{ product.salesPrice }} MORE INFO
+                        </a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_post_tile(post) %}
+    {% set imagefind = post.content | split('src="') %}
+    {% set imagefind = imagefind[1] | split('"') %}
+    {% set replace_value_var= '/blog_images/' %}
+    {% set replace_with_value_var = '/blog_images/thumbnail/' %}
+    {% set firstimage = imagefind[0] | replace( { (replace_value_var): replace_with_value_var} ) %}
+    <div class="onewide onehigh contentpane">
+        <div class="onewide onehigh img-lazy" data-original="{{ firstimage }}">
+            <div class="panetransparency_low">
+                <div class="paneoverlay">
+                    <div><a href="/{{ post.url }}" class="mediumpanetitle eventbg eventborder">{{ post.title }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_portfolio_tile(post) %}
+    {% set imagefind = post.content | split('src="') %}
+    {% set imagefind = imagefind[1] | split('"') %}
+    {% set replace_value_var= '/blog_images/' %}
+    {% set replace_with_value_var = '/blog_images/thumbnail/' %}
+    {% set firstimage = imagefind[0] | replace( { (replace_value_var): replace_with_value_var} ) %}
+    <div class="onewide onehigh contentpane">
+        <div class="onewide onehigh img-lazy" data-original="{{ firstimage }}">
+            <div class="panetransparency_low">
+                <div class="paneoverlay"><div><a href="/pages/portfolio" class="mediumpanetitle portfoliobg portfolioborder">OUR PORTFOLIO</a></div></div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_workshop_tile() %}
+    <div class="onewide onehigh contentpane">
+        <div class="onewide onehigh img-lazy" data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/workshop.jpg">
+            <div class="panetransparency_low">
+                <div class="paneoverlay"><div><a href="/pages/workshop" class="mediumpanetitle workshopbg workshopborder">THE WORKSHOP</a></div></div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_large_product_square(product, symbol) %}
+    <div class="largeproductpane">
+        <a href="{{ product.url }}">
+            <div class="productimage" style="height: 350px;">
+                <div class="img-lazy" style="height: 350px;" data-original="{{ product.images[0] | imgUrl('medium') }}"></div>
+            </div>
+        </a>
+        <div class="productname" style="margin-top: 4px;"><a href="{{ product.url }}">{{ product.title }}</a></div>
+        <div class="productprice" style=" "><a href="{{ product.url }}" style="color: #999"> {{ symbol }}{{ product.salesPrice }}</a></div>
+        <div class="productdescription" style="">
+            {% set firstparagraph = product.content|split("<p>") %}
+            {{ firstparagraph[1]|striptags }}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_product_square(product, symbol) %}
+    <div class="productpane">
+        <a href="{{ product.url }}">
+            <div class="productimage">
+                <div class="img-lazy" style="height: 185px;" data-original="{{ product.images[0] | imgUrl('medium') }}"></div>
+            </div>
+        </a>
+        <div class="productname" style="margin-top: 4px;"><a href="{{ product.url }}">{{ product.title }}</a></div>
+        <a href="{{ product.url }}" style="color: #999"><div class="productprice" style=""> {{ symbol }}{{ product.salesPrice }}</a></div>
+    </div>
+{% endmacro %}
+
+{% macro draw_blog_tile(post) %}
+    {% set imagefind = post.content | split('src="') %}
+    {% set imagefind = imagefind[1] | split('"') %}
+    {% set replace_value_var= '/blog_images/' %}
+    {% set replace_with_value_var = '/blog_images/thumbnail/' %}
+    {% set firstimage = imagefind[0] | replace( { (replace_value_var): replace_with_value_var} ) %}
+    <a href="{{ post.url }}">
+        <div class="twowideresponsiveseamless twohighseamless contentpane" >
+            <div class="twowideresponsiveseamless twohighseamless img-lazy" data-original="{{ firstimage }}">
+                <div style="background:
+                    linear-gradient(
+                        to bottom,
+                        rgba(0, 0, 0, 0),
+                        rgba(0, 0, 0, 0.6)
+                );
+                position: absolute; bottom: 0;">
+                    <div style="font-size: 30px; color: white; text-align: left; padding: 130px 25px 0px 25px;">
+                        {{ post.title | upper }}
+                    </div>
+                    <div style="font-size: 16px; color: white; text-align: left; padding: 0px 25px 25px 25px;">
+                        {% set getexcerpt = post.excerpt|split(" ") %}
+                        {% for i in 0..42 %}
+                            {{ getexcerpt[i] }}
+                        {% endfor %}
+                        ... continue reading
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+{% endmacro %}
+
+{% macro draw_portfolio_item(post) %}
+    {% set imagefind = post.content | split('src="') %}
+    {% set imagefind = imagefind[1] | split('"') %}
+    {% set replace_value_var= '/blog_images/' %}
+    {% set replace_with_value_var = '/blog_images/thumbnail/' %}
+    {% set firstimage = imagefind[0] | replace( { (replace_value_var): replace_with_value_var} ) %}
+    <a href="{{ post.url }}">
+        <div class="halfpageresponsive onehighseamless contentpane" style="height: 350px;">
+            <div class="onehighseamless img-lazy" data-original="{{ firstimage }}" style="height: 350px;">
+                <div style="width: 100%; background:
+                    linear-gradient(
+                        to bottom,
+                        rgba(0, 0, 0, 0),
+                        rgba(0, 0, 0, 0.4)
+                );
+                position: absolute; bottom: 0;">
+                    <div style="font-size: 18px; color: white; text-align: center; padding: 50px 25px 25px 25px;">
+                        <span class="portfoliobg portfolioborder" style="padding: 5px;">PORTFOLIO</span>
+                        <br /><br />
+                        <span style="border: 3px solid white; padding: 5px;">{{ post.title }}</span><br />
+                        <br />
+                        <br />
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+{% endmacro %}
+
+{% macro draw_product_photo(image, class, style) %}
+    <div class="frame easyzoom easyzoom--overlay easyzoom--with-thumbnails">
+        <a href="{{ image | imgUrl('xlarge') }}"  class="swipebox" title="" >
+            <div class="{{ class }}" style="{{ style }} background-image: url('{{ image | imgUrl('xlarge') }}');">
+            </div>
+        </a>
+    </div>
+{% endmacro %}
+
+{% macro product_list_individual_product(product, store) %}
+    {% set product_image = product.featuredImage | imgUrl('medium') %}
+    {% set has_image = product_image|length > 0 %}
+    <div class="col-xs-6 col-md-3 col-sm-4 col-lg-3 product-list-item" data-uat-key="prods-{{ loop.index }}">
+        <a href="{{ store.siteUrl }}/{{ product.url }}">
+            <div class="img-wrapper border">
+                <img data-uat-key="prods-img-{{ loop.index }}"
+                     {% if has_image %}data-original="{{ product_image }}"{% else %} src="{{ default_thumbnail_src }}" {% endif %}>
+            </div>
+            <div class="product-desc">
+                <div class="product-name ellipsis x1"
+                     data-uat-key="prods-name-{{ loop.index }}">{{ product.title }}</div>
+                <div class="product-price">
+                    <del>
+                        {% if product.standardPrice and product.salesPrice and product.standardPrice > product.salesPrice %}
+                            {{ store.currency.symbol }}{{ product.standardPrice }}
+                        {% endif %}
+                    </del>
+                    <span data-uat-key="prods-amountins-{{ loop.index }}">{{ store.currency.symbol }}{% if product.salesPrice %}{{ product.salesPrice }}{% endif %}</span>
+                </div>
+            </div>
+        </a>
+    </div>
+{% endmacro %}

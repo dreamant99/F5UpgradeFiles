@@ -1,0 +1,48 @@
+{% extends "layouts/base.twig" %}
+{% set show_multi_currency = true %}
+{% block content %}
+    <!-------------------------------->
+    <!--TOP DIVIDER------------------->
+    <!-------------------------------->
+    <section name="TOP DIVIDER">
+        <div class="wrapperdiv divider" style="background-color: white;">
+            <div class="bodycontentdiv">
+                <a href="/">HOME</a> / <a href="/pages/portfolio">PORTFOLIO</a>
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--PORTFOLIO--------------------->
+    <!-------------------------------->
+    <section name="PORTFOLIO">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv">
+                {% paginate blogs['portfolio'].posts by 200 %}
+                    {% for post in paginate.results %}
+                        {% set imagefind = post.content | split('src="') %}
+                        {% set imagefind = imagefind[1] | split('"') %}
+                        {% set replace_value_var= '/blog_images/' %}
+                        {% set replace_with_value_var = '/blog_images/thumbnail/' %}
+                        {% set firstimage = imagefind[0] | replace( { (replace_value_var): replace_with_value_var} ) %}
+                        {% set boxSize = random(['onewide onehigh']) %}
+                        {# set boxSize = random(['onewide onehigh', 'twowide onehigh', 'twowide twohigh']) #}
+                        
+                        <a href="/{{ post.url }}">
+                            <div class="{{ boxSize }} contentpane">
+                                <div class="{{ boxSize }} img-lazy fadeContainer" data-original="{{ firstimage | blogImgUrl('large') }}">
+                                    <div class="{{ boxSize }}">
+                                        <div class="paneoverlay">
+                                            <div class="largepanebutton fadeOverlay">
+                                                {{ post.title }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% endpaginate %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

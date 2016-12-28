@@ -1,0 +1,337 @@
+{% extends "layouts/base.twig" %}
+{% set show_multi_currency = true %}
+{% import "snippets/macro.twig" as macro %}
+{% block content %}
+   {# <div id="custom_sort" data_source=""></div>#}
+    <!-------------------------------->
+    <!--TOP DIVIDER-->
+    <!-------------------------------->
+    {% if menuSets['default-menu'].hasItems %}
+        <section name="TOP DIVIDER">
+            <div class="wrapperdiv divider" style="background-color: white;">
+                <div class="bodycontentdiv">
+                    <div class="central hideontiny">
+                        <div>
+                            <ul>
+                                {% for item in menuSets['default-menu'].menuItems %}
+                                    <li class="{{ (loop.index == 1) ? 'productborder blacklinks' : 'productbg productborder' }}">
+                                        <a class="whitelink" href="{% if device.isDesktop or (device.isPad and not item.hasChild) %}{{ item.link }}{% else %}#{% endif %}" target="{{ item.target }}">
+                                            {#{% if item.link matches '/\\/collections\\/'~ collection.slug ~'/' %}#}
+                                            {#selected#}
+                                            {#{% endif %}#}
+                                            {{ item.title | upper }}
+                                        </a><br />
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    {# start content #}
+    <!--------------------->
+    <!--LIST OF PRODUCTS -->
+    <!--------------------->
+    <div class="{% if device.isDesktop %}content-wrapper{% else %}content-wrapper-no-padding{% endif %}">
+        <div class="{% if device.isDesktop %}container{% else %}container-fluid{% endif %}">
+            <form id="variant_form" method="get" action="{{ store.httpLink }}/{{ collection.url }}">
+                <div class="product-list-wrapper">
+                    <input id="collection_slug" type="hidden" value="{{ collection.slug }}">
+                    <input id="collection_product_count" type="hidden" value="{{ collection.productsCount }}">
+
+
+                    {# category #}
+                    {#{% if (device.isDesktop or device.isPad) and themeOptions['anw_enable_category'] %}#}
+                    {% if 1==0 %}
+                        <div class="sub-menu-list" style="{% if device.isPad %} padding-top: 12px; {% endif %}">
+                            <p class="product-categories-title">{{ 'productlist.category'|t }}</p>
+                            <ul class="product-categories">
+                                {{ macro.category_tree(categories, collection.categoryFilters, 0) }}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {# end category #}
+
+                    <div class="product-list-main">
+                        {# breadcrumb navigation #}
+                        <ol class="breadcrumb">
+                            <li><a href="{{ store.httpLink }}">{{ 'common.bar.home' | t }}</a></li>
+                            <li><a href="javascript:void(0);">
+                                    {% if collection.title | lower == 'all' %}
+                                        {{ 'breadcrumb.allproducts' | t }}
+                                    {% else %}
+                                        {{ collection.title }}
+                                    {% endif %}</a></li>
+                        </ol>
+                        {# end breadcrumb navigation #}
+
+                        {# collection image #}
+                        {% if collection.image is not empty %}
+                            <div class="img-container" data-ratio="0.25">
+                                <div class="img-wrapper">
+                                    <img data-original="{{ collection.image }}">
+                                </div>
+                            </div>
+                        {% endif %}
+                        {# end collection image #}
+
+                        {# product filter #}
+                        {% if device.isDesktop or device.isPad %}
+                            <div style="display:none;">
+                                {# variant filter #}
+                                {% if collection.filters | length > 0 %}
+                                    <div class="product-list-filter">
+                                        <ul class="variant-filter list-unstyled">
+                                            {% for key, value in collection.filters %}
+                                                {% set index = loop.index %}
+                                                <li class="option-wrapper">
+                                                    <div class="option-name ellipsis x1 pull-left"
+                                                         title="{{ value['name'] }}">
+                                                        <span class="color-block"></span>
+                                                        {{ value['name'] }}
+                                                    </div>
+                                                    <ul class="option-value-wrapper list-unstyled list-inline single-line pull-left">
+                                                        {% for k, v in value['value'] %}
+                                                            {% if value['type'] == 'id' %}
+                                                                {% set opt_value = k %}
+                                                            {% else %}
+                                                                {% set opt_value = v.name %}
+                                                            {% endif %}
+                                                            {% set opt_id = key ~ ":" ~ opt_value %}
+                                                            <li><input type="checkbox" id="{{ opt_id }}" name="options[]"
+                                                                       value="{{ opt_id }}"
+                                                                       {% if v.checked %}checked="checked"{% endif %}><label
+                                                                        class="variant-name ellipsis x1" for="{{ opt_id }}"
+                                                                        title="{{ v.name }}">{{ v.name }}</label></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    <div class="view-more pull-right">{{ 'productlist.more'|t }}
+                                                        <i class="icon icon-downwardarrow"></i>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                                {# end variant filter #}
+
+                                {# sort filter #}
+                                <div class="product-list-filter">
+                                    <div class="sort-filter">
+                                        <div class="sort-name ellipsis x1 pull-left">
+                                            <div class="color-block"></div>
+                                            {{ 'productlist.sort' | t }}
+                                        </div>
+                                        <ul class="option-value-wrapper list-unstyled list-inline single-line pull-left">
+                                            {% set orderbys = collection.sortOptions %}
+                                            {% set selected = collection.currentSortOption %}
+                                            {% for key, value in orderbys %}
+                                                {% for orderby in value %}
+                                                    <li>
+                                                        <input type="radio" id="sort_{{ orderby.id }}" name="orderby"
+                                                               {% if selected == orderby.id %}checked="checked"{% endif %}
+                                                               value="{{ orderby.id }}">
+                                                        <label for="sort_{{ orderby.id }}" class="sort-order"
+                                                               data-uat-key="orderby-{{ orderby.id }}">
+                                                            {{ orderby.name | t }}
+                                                            {% if orderby.orderDir=='ASC' %}
+                                                                <i class="icon icon-theme3arrowup"></i>
+                                                            {% else %}
+                                                                <i class="icon icon-theme3arrowdown"></i>
+                                                            {% endif %}
+                                                        </label>
+                                                    </li>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                {# end sort filter #}
+                            </div>
+                        {% elseif device.isPhone %}
+                            <div style="display:none;">
+                                {# filter and sort on mobile phone #}
+                                <div class="product-list-tab-phone row">
+                                    {% set columnNum = ((collection.filters | length > 0 ) ? 1 : 0) + (themeOptions['anw_enable_category'] ? 1 :0) + 1 %}
+                                    {% set width = 12 / columnNum %}
+                                    {% if collection.filters | length > 0 %}
+                                        <div class="col-xs-{{ width }} filter-btn">
+                                            <span>{{ 'productlist.filter'|t }}</span>
+                                            <i class="icon icon-downwardarrow"></i>
+                                        </div>
+                                    {% endif %}
+                                    {# category #}
+                                    {#{% if themeOptions['anw_enable_category'] %}#}
+                                    {% if 1==0 %}
+                                        <div class="col-xs-{{ width }} category-btn">
+                                            <span>{{ 'productlist.category'|t }}</span>
+                                            <i class="icon icon-downwardarrow"></i>
+                                        </div>
+                                    {% endif %}
+                                    {# end category #}
+                                    <div class="col-xs-{{ width }} sort-btn">
+                                        <span>{{ 'productlist.sort'|t }}</span>
+                                        <i class="icon icon-downwardarrow"></i>
+                                    </div>
+                                </div>
+                                {# end filter and sort on mobile phone #}
+                            </div>
+                        {% endif %}
+                        {# end product filter#}
+
+                        {# category query #}
+                        {#{% if themeOptions['anw_enable_category'] and collection.categoryFilters is not empty %}#}
+                        {% if 1==0 %}
+                            <div class="category-filters">
+                                {% if collection.categoryFilters is iterable %}
+                                    {% for layer in collection.categoryFilters %}
+                                        <input style="display: none" class="category-filter" type="checkbox" name="options[]" value="category:{{ layer }}" checked="checked" />
+                                    {% endfor %}
+                                {% else %}
+                                    <input style="display: none" class="category-filter" type="checkbox" name="options[]" value="category:{{ collection.categoryFilters }}" checked="checked" />
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        {# end category query #}
+
+                   {#{% set custom_sort = "DATE_DESC" %}#}
+                        {% paginate collection.productsWithFilter by 12 %}
+
+                        {% if paginate.results %}
+                            {#<div class="row product-list-items img-container" data-sort="">#}
+                            <div class="row product-list-items img-container">
+                                {{ macro.product_list_product(store, paginate.results) }}
+                            </div>
+                        {% else %}
+
+                            {% if device.isPhone %}
+                                {{ macro.empty_page("error-page-phone",store.siteUrl ,"empty-collection-phone","",['product.detail.no.product.found' | t]) }}
+                            {% elseif device.isPad %}
+                                {{ macro.empty_page("error-page-pad",store.siteUrl ,"empty-collection-pcpad","",['product.detail.no.product.found' | t]) }}
+                            {% else %}
+                                {{ macro.empty_page("error-page",store.siteUrl ,"empty-collection-pcpad","",['product.detail.no.product.found' | t]) }}
+                            {% endif %}
+
+                        {% endif %}
+
+                        {# load more #}
+                        {% if paginate.hasNextPage %}
+                            <div class="load-more">
+                                <i id="load_more_icon" class="icon icon-theme3refrash"></i>
+
+                                <div id="load_more_text">{{ 'productlist.loadmore' | t }}</div>
+                            </div>
+                        {% endif %}
+                        {# end load more #}
+                        {% endpaginate %}
+                        {# end products #}
+
+                    </div>
+                </div>
+                {% if device.isPhone %}
+                    {# modal for filter #}
+                    <div class="product-list-modal product-filter-modal">
+                        <div class="modal-head">
+                            <span class="modal-done"><i class="icon icon-theme3ok"></i></span>
+                            <span>{{ 'productlist.filter'|t }}</span>
+                            <span class="modal-cancel"><i class="icon icon-theme3cancel"></i></span>
+                        </div>
+                        {% if collection.filters|length>0 %}
+                            <div class="product-list-filter">
+                                {% for key, value in collection.filters %}
+                                    <div class="variant-filter">
+                                        <div class="toggle-option option-name unwind">
+                                            <i class="icon icon-upwardarrow"></i>{{ value['name'] }}
+                                        </div>
+                                        <div class="toggle-option-value option-value-{{ index }}">
+                                            {% for k, v in value['value'] %}
+                                                {% if value['type'] == 'id' %}
+                                                    {% set opt_value = k %}
+                                                {% else %}
+                                                    {% set opt_value = v.name %}
+                                                {% endif %}
+
+                                                {% set opt_id = key ~ ":" ~ opt_value %}
+                                                <input type="checkbox" id="{{ opt_id }}" name="options[]"
+                                                       value="{{ opt_id }}"
+                                                       {% if v.checked %}checked="checked"{% endif %}><label
+                                                    class="variant-name" for="{{ opt_id }}">{{ v.name }}<i
+                                                        class="icon icon-variantselectedmark option-selected-icon"></i></label>
+
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {# end modal for filter #}
+
+
+                    {# modal for filter #}
+                    <div class="product-list-modal product-category-modal">
+                        <div class="modal-head">
+                            <span class="modal-done"><i class="icon icon-theme3ok"></i></span>
+                            <span>{{ 'productlist.category'|t }}</span>
+                            <span class="modal-cancel"><i class="icon icon-theme3cancel"></i></span>
+                        </div>
+                        {#{% if themeOptions['anw_enable_category'] %}#}
+                        {% if 1==0 %}
+                            <div class="product-list-filter">
+                                <ul class="product-categories">
+                                    {{ macro.category_tree(categories, collection.categoryFilters, 0) }}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                    {# end modal for filter #}
+
+                    {# modal for sort #}
+                    <div class="product-list-modal product-sort-modal">
+                        <div class="modal-head">
+                            <span class="modal-done"><i class="icon icon-theme3ok"></i></span>
+                            <span>{{ 'productlist.sort'|t }}</span>
+                            <span class="modal-cancel"><i class="icon icon-theme3cancel"></i></span>
+                        </div>
+                        <div class="product-list-filter">
+                            <div class="sort-filter">
+                                {% set orderbys = collection.sortOptions %}
+                                {% set selected = collection.currentSortOption %}
+                                {% for key, value in orderbys %}
+                                    <div class="sort-key">{{ key | t }}</div>
+                                    <div class="sort-values">
+                                        {% for orderby in value %}
+                                            <input type="radio" id="sort_{{ orderby.id }}" name="orderby"
+                                                   {% if selected == orderby.id %}checked="checked"{% endif %}
+                                                   value="{{ orderby.id }}">
+                                            <label for="sort_{{ orderby.id }}" class="sort-order"
+                                                   data-uat-key="orderby-{{ orderby.id }}">{{ orderby.name | t }}</label>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {# modal for sort #}
+
+                {% endif %}
+            </form>
+
+        </div>
+    </div>
+    {# end content #}
+    <script id="products_template" type="text/x-handlebars-template">
+        {{ macro.product_list_template() }}
+    </script>
+{% endblock %}
+{% block stylesheets %}
+    {{ 'css/collection.css' | assetUrl | stylesheetTag }}
+    {{ 'css/error.css' | assetUrl | stylesheetTag }}
+{% endblock %}
+{% block scripts %}
+    {{ 'js/collection.js' | assetUrl | scriptTag }}
+{% endblock %}

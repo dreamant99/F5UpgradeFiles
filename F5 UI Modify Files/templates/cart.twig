@@ -1,0 +1,123 @@
+{% import "snippets/macro.twig" as macro %}
+{% extends "layouts/base.twig" %}
+{% set show_multi_currency = true %}
+{% block page_title %} {{ 'cart.title.shopping.cart' | t }} {% endblock %}
+{% block content %}
+	<!-------------------------------->
+	<!--TOP DIVIDER-->
+	<!-------------------------------->
+	<section name="TOP DIVIDER">
+		<div class="wrapperdiv divider" style="background-color: white;">
+			<div class="bodycontentdiv">
+				<a href="/">HOME</a> / <a href="/cart">CART</a>
+			</div>
+		</div>
+	</section>
+
+	<div class="{% if device.isDesktop %}content-wrapper{% else %}content-wrapper-no-padding{% endif %} no-cache">
+		<div class="{% if device.isDesktop %}container{% else %}container-fluid{% endif %} cart">
+			<div class="row">
+
+				{#<ol class="breadcrumb">#}
+					{#<li><a href="{{ store.httpLink }}">{{ 'common.bar.home' | t }}</a></li>#}
+					{#<li><a href="#">{{ 'common.bar.cart' | t }}</a></li>#}
+				{#</ol>#}
+
+				<div class="col-md-12 col-lg-12">
+
+					{% if cart.cartItems | length == 0 %}
+
+						{% if device.isPhone %}
+							{{ macro.empty_page("error-page-phone", store.httpLink, "cart-phone", 'empty.cart.button'|t, ['empty.cart.desc' | t]) }}
+						{% elseif device.isPad %}
+							{{ macro.empty_page("error-page-pad", store.httpLink, "cart-pcpad", 'empty.cart.button'|t, ['empty.cart.desc' | t]) }}
+						{% else %}
+							{{ macro.empty_page("error-page", store.httpLink, "cart-pcpad", 'empty.cart.button'|t, ['empty.cart.desc' | t]) }}
+						{% endif %}
+					{% else %}
+						<input type="hidden" id="siteurl" value="{{ store.siteUrl }}">
+						<input type="hidden" id="currency" value="{{ store.currencySymbol }}">
+						<input type="hidden" id="decimal_digits" value="{{ store.decimalDigits }}">
+
+						{% set checkable_status = [1, 3, 4] %}
+						{% set linkable_status = [1, 2, 3, 4, 5] %}
+						{% set inputable_status = [1, 3, 4] %}
+						{% set button_clickable_status = [1, 3, 4] %}
+						{% set valid_status = [1, 3, 4] %}
+						{% set has_valid_item = false %}
+
+						{% for cart_product_item in cart.cartItems %}
+							{% if cart_product_item.status in valid_status %}
+								{% set has_valid_item = true %}
+							{% endif %}
+						{% endfor %}
+
+						<input type="hidden" id="has_valid_item" value="{{ has_valid_item }}">
+
+						{% if device.isPhone %}
+							{% include ['snippets/cart-detail-phone.twig'] %}
+						{% else %}
+							{% include ['snippets/cart-detail.twig'] %}
+						{% endif %}
+
+					{% endif %}
+				</div>
+			</div>
+
+			<!-- delete cart item modal -->
+			<div class="cancelProduct modal bs-example-modal-sm" tabindex="-1"
+				 role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-sm cart-modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body">
+							<span>{{'cart.cancelConfirmInfo' | t }}</span>
+						</div>
+						<div class="modal-footer">
+							<button id="cancel_close" type="button" class="btn btn-default" data-dismiss="modal">{{'cart.cancelClose' | t }}</button>
+							<button id="cancel_confirm" type="button" class="btn btn-primary btn-cancel-confirm" data-dismiss="modal">{{'cart.cancelConfirm' | t}}</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ajax call waiting message -->
+			<div class="loading-popup modal" tabindex="-1"
+				 role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-wrapper">
+				<div class="modal-dialog modal-sm">
+					<div class="modal-content">
+						<div class="modal-body">
+							{{ "images/ajax-loader.gif" | globalAssetUrl | imgTag }}
+							<div class="wait-text">{{'cart.loading.wait' | t }}</div>
+						</div>
+					</div>
+				</div>
+				</div>
+			</div>
+
+			<!-- include promotions description tempalte for handle bars in cart.js -->
+			{% include ['snippets/cart-promotions-template.twig'] %}
+
+			<!-- include sidebar for promotions on phone -->
+			{% if device.isPhone %}
+				{% include ['snippets/cart-promotions-phone.twig'] %}
+			{% endif %}
+
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block stylesheets %}
+	{{ "css/cart.css" | assetUrl | stylesheetTag }}
+	{{ "css/error.css" | assetUrl | stylesheetTag }}
+{% endblock %}
+{% block scripts %}
+	{{ 'js/cart.js' | assetUrl | scriptTag }}
+	{% for payment in store.paymentMethods %}
+		{% if  payment | lower   matches  '/expresscheckout/i' and (customer or  store.checkoutWithoutAccount) %}
+			{{'//www.paypalobjects.com/api/checkout.js'|  scriptTag}}
+		{% endif %}
+	{% endfor %}
+{% endblock %}
+

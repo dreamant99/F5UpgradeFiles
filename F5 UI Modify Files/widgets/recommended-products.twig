@@ -1,0 +1,22 @@
+{% import "snippets/macro.twig" as macro %}
+{% if products|length > 0 %}
+	<div id="related-products">
+        <div class="header related-products-header" style="background-color: white" >
+            {% if themeOptions['anw-related-products-title']|length <= 0 %}
+                {{ recommendText }}
+            {% else %}
+                {{ themeOptions['anw-related-products-title'] }}
+            {% endif %}
+        </div>
+
+		<div class="row">
+			<div class="product-view img-container product-list-area" >
+				{% for product in products %}
+					<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3">
+						{{ macro.product_cardview(product, store, loop.index, true) }}
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+{% endif %}

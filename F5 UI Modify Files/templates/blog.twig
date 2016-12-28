@@ -1,0 +1,75 @@
+{% import "snippets/macro.twig" as macro %}
+{% extends "layouts/base.twig" %}
+{% block content %}
+    <!-------------------------------->
+    <!--TOP DIVIDER-->
+    <!-------------------------------->
+    <section name="TOP DIVIDER">
+        <div class="wrapperdiv divider" style="background-color: white;">
+            <div class="bodycontentdiv">
+                <a href="/">HOME</a> / <a href="/blogs/">BLOG</a>
+            </div>
+        </div>
+    </section>
+    {% paginate blog.posts by 10 %}
+        {% if paginate.totalCount == 0 %}
+            <section name="BLOG POST {{ loop.index }}">
+                <div class="wrapperdiv">
+                    <div class="bodycontentdiv">
+                        <div class="empty-text">{{'category.empty' | t }}</div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+        {% for post in paginate.results %}
+            {% set imagefind = post.content | split('src="') %}
+            {% set imagefind = imagefind[1] | split('"') %}
+            {% set replace_value_var= '/blog_images/' %}
+            {% set replace_with_value_var = '/blog_images/thumbnail/' %}
+            {% set firstimage = imagefind[0] | replace( { (replace_value_var): replace_with_value_var} ) %}
+            <section name="BLOG POST {{ loop.index }}">
+                <div class="wrapperdiv">
+                    <div class="bodycontentdiv">
+                        <a href="{{store.httpLink}}/{{ post.url }}">
+                            <div class="twowideresponsiveseamless onehighseamless contentpane" style="margin-bottom: 20px;">
+                                <div class="twowideresponsiveseamless onehighseamless img-lazy" data-original="{{ firstimage }}"></div>
+                            </div>
+                        </a>
+                        <div class="twowideresponsiveseamless contentpane greylinks" style="text-align: left; padding-left: 10px;">
+                            <h3 style="margin: 0;"><a href="{{store.httpLink}}/{{ post.url }}">{{ post.title }}</a></h3>
+                            <time>{{ post.publishTime | date("F jS Y ") }}</time>
+                            <hr>
+                            <p>
+                                {% set getexcerpt = post.excerpt|split(" ") %}
+                                {% for i in 0..40 %}
+                                    {{ getexcerpt[i] }}
+                                {% endfor %}
+                                ...
+                            </p>
+                            <p style="text-align: left;">
+                                <a href="{{store.httpLink}}/{{ post.url }}" class="continue-reading btn btn-primary btn-sm">
+                                    {{'category.continueReading' | t }}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <hr>
+                </div>
+            </section>
+        {% endfor %}
+        <div class="post-comments-pagination text-right">
+            {{ macro.common_paginate(store.httpLink, paginate) }}
+        </div>
+    {% endpaginate %}
+
+{% endblock %}
+
+{% block scripts %}
+	{{ 'js/post-list.js' | assetUrl | scriptTag }}
+{% endblock %}
+{% block stylesheets %}
+	{{ "css/category.css" | assetUrl | stylesheetTag  }}
+{% endblock %}

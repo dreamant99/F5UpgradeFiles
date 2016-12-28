@@ -1,0 +1,218 @@
+{% extends "layouts/base.twig" %}
+{% import "snippets/macro.twig" as macro %}
+{% set show_multi_currency = true %}
+{% block logo %}
+  {% if not device.isDesktop %}
+    {% include 'snippets/header.twig' %}
+  {% endif %}
+{% endblock %}
+{% block stylesheets %}
+    {{ "/slick-carousel/1.5.8/slick.min.css" | thirdPartyAssetUrl | stylesheetTag}}
+    {{ "/slick-carousel/1.5.8/slick-theme.min.css" | thirdPartyAssetUrl | stylesheetTag}}
+    {{ "css/home.css" | assetUrl | stylesheetTag  }}
+{% endblock %}
+{% block scripts %}
+    {{ "/slick-carousel/1.5.8/slick.min.js" | thirdPartyAssetUrl | scriptTag }}
+    {{ "js/home.js" | assetUrl | scriptTag  }}
+    {{ "js/instafeed.min.js" | assetUrl | scriptTag  }}
+    <script type="text/javascript">
+        jQuery.ajax( {
+            url: '//freegeoip.net/json/',
+            type: 'POST',
+            dataType: 'jsonp',
+            success: function(location) {
+
+                console.log(location.country_code);
+
+                if (location.country_code == "CN") {
+                    // IN CHINA SO DONT SHOW THE ALREADY HIDDEN INSTAGRAM SECTION
+
+                } else {
+                    // OUTSIDE CHINA - LOAD THE INSTAFEED CODE AND SHOW THE SECTION
+                    var templatecode = '<a href="\{\{link\}\}"><div class="halfwideseamless halfhighseamless contentpane showhim" style="background-image: url(\{\{image\}\});"><div class="showme" style="background-color: black; opacity: 0.7; height: 100%"><div class="paneoverlay showme instagraminfo"><img src="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/instagram-heart.png" height="10px" width="10px"style="vertical-align: -1px;"> \{\{likes\}\} <img src="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/instagram-comment.png" height="10px" width="10px" style="vertical-align: -1px;"> \{\{comments\}\}</div></div></div></a>';
+
+                    var feed = new Instafeed({
+                        get: 'user',
+                        userId: 198306726,
+                        accessToken: '198306726.467ede5.0ebd7b213af741a3ad93dda3e0a3a9f4',
+                        limit: 12,
+                        resolution: 'low_resolution',
+                        template: templatecode
+                    });
+
+                    feed.run();
+                    $('#section-instagram').show();
+                }
+            }
+        } );
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <!-------------------------------->
+    <!--TOP DIVIDER-->
+    <!-------------------------------->
+    <section name="TOP DIVIDER">
+        <div class="wrapperdiv divider" style="background-color: white;">
+            <div class="bodycontentdiv">
+
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--TOP TILES-->
+    <!-------------------------------->
+    <section name="TOP TILES">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv">
+                {% paginate collections["homepage-top-star"].products by 2 (fixedPage = 1) %}
+                {{ macro.draw_star_product(collections["homepage-top-star"], paginate.results[0], store.currency.symbol) }}
+                {% endpaginate %}
+                {% paginate blogs["events"].posts by 2 (fixedPage = 1) %}
+                {{ macro.draw_post_tile(paginate.results[1]) }}
+                {% endpaginate %}
+                {% paginate blogs["portfolio"].posts by 2 (fixedPage = 1) %}
+                {{ macro.draw_portfolio_tile(paginate.results[0]) }}
+                {% endpaginate %}
+
+                {{ macro.draw_collection_tile(collections["homepage-top-collection"]) }}
+
+                {% paginate blogs["events"].posts by 2 (fixedPage = 1) %}
+                {{ macro.draw_post_tile(paginate.results[0]) }}
+                {% endpaginate %}
+                {% paginate collections["homepage-top-two"].products by 2 (fixedPage = 1) %}
+                {{ macro.draw_product_tile(paginate.results[0], store.currency.symbol) }}
+                {% endpaginate %}
+
+                {{ macro.draw_workshop_tile() }}
+
+                {% paginate collections["homepage-top-two"].products by 2 (fixedPage = 1) %}
+                {{ macro.draw_product_tile(paginate.results[1], store.currency.symbol) }}
+                {% endpaginate %}
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--QUOTE AND MEDIA-->
+    <!-------------------------------->
+    <section name="QUOTE AND MEDIA">
+        <div class="wrapperdiv" style="background-color: #F3F3F3">
+            <div class="bodycontentdiv" style="padding: 5px 0px">
+                <div class="homepagequote">
+                    We build, we ride. Proudly established 2010 in Shanghai, China.
+                </div>
+            </div>
+            <div class="bodycontentdiv" style="padding: 5px 0px">
+                <div class="halfwide halfhigh contentpane"><a href="http://www.wallpaper.com/travel-directory/china/shanghai/shops/factory-five/605"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_wallpaper.png"></a></div>
+                <div class="halfwide halfhigh contentpane"><a href="http://www.sbs.com.au/shop/product/category/DVDs/11202/Hipsters-Series-1-Digital-Download-OD"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_sbs.png"></a></div>
+                <div class="halfwide halfhigh contentpane"><a href="http://cyclingtips.com.au/2013/06/ten-more-of-the-worlds-coolest-bike-shops/"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_cyclingtips.png"></a></div>
+                <div class="halfwide halfhigh contentpane"><a href="http://hypebeast.com/2014/12/factory-five-opens-a-new-shop"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_hypebeast.png"></a></div>
+                <div class="halfwide halfhigh contentpane hideontiny"><a href="http://www.chinadaily.com.cn/life/2014-07/11/content_17728795_2.htm"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_chinadaily.png"></a></div>
+                <div class="halfwide halfhigh contentpane hideontiny"><a href="https://www.nowness.com/story/fixie-factory"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_nowness.png"></a></div>
+                <div class="halfwide halfhigh contentpane oddoneout hideontiny"><a href="http://www.ellechina.com/"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_elle.png"></a></div>
+                <div class="halfwide halfhigh contentpane oddoneout hideontiny"><a href="http://travel.cnn.com/shanghai/play/shanghais-first-fixie-home-base-019587"><img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/19102526/media_cnngo.png"></a></div>
+
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--MAP STRIP-->
+    <!-------------------------------->
+    <section name="MAP STRIP">
+        <div class="wrapperdiv" style="">
+            <div class="img-lazy" data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/07/31032020/factoryfive_web.jpg">
+                <div class="bodycontentdiv" style="padding: 50px 0px">
+                    <div class="twowideresponsive onehigh contentpane workshopbg rounded" style="opacity: 0.9;">
+                        <div class="workshopbg_alt" style="height: 25px"></div>
+                        <div class="infobox">
+                            <br />
+                            <span>VISIT FACTORY FIVE</span><br />
+                            <span>667 Changhua Lu, Building S1, Shanghai, China</span></br >
+                            <br />
+                            <span>Mon: Closed</span><br />
+                            <span>Tues to Fri: 10:30 to 21:00</span><br />
+                            <span>Sat and Sun: 13:00 to 19:00</span><br />
+                            <br />
+                            <a href="">
+                                <div class="whiteborder" style="width: 150px; margin: auto;">
+                                    <span><a href="/pages/find-us" class="whitelink">FIND US</a></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <a target="_new" href="https://www.google.co.uk/maps/place/667+Chang+Hua+Lu,+Jingan+Qu,+Shanghai+Shi,+China,+200000/@31.241519,121.447453,16z/data=!4m2!3m1!1s0x35b270205be2ddd5:0x14b78cbb17df9fd9" target="_new">
+                        <div class="twowideresponsive onehigh contentpane" style="background-image: url('http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/07/31034741/F5-Map.jpg');"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--PRODUCTS-->
+    <!-------------------------------->
+    <section name="PRODUCTS">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv" style="padding: 25px 0px">
+                {% paginate collections["homepage-frames"].products by 5 (fixedPage = 1) %}
+                {{ macro.draw_large_product_square(paginate.results[0], store.currency.symbol) }}
+                {{ macro.draw_product_square(paginate.results[1], store.currency.symbol) }}
+                {{ macro.draw_product_square(paginate.results[2], store.currency.symbol) }}
+                {{ macro.draw_product_square(paginate.results[3], store.currency.symbol) }}
+                {{ macro.draw_product_square(paginate.results[4], store.currency.symbol) }}
+                {% endpaginate %}
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--PORTFOLIO-->
+    <!-------------------------------->
+    <section name="PORTFOLIO">
+        <div class="wrapperdiv">
+            {% paginate blogs["portfolio"].posts by 2 (fixedPage = 1) %}
+            {{ macro.draw_portfolio_item(paginate.results[0]) }}
+            {{ macro.draw_portfolio_item(paginate.results[1]) }}
+            {% endpaginate %}
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--INSTAGRAM [START HIDDEN - IS SHOWN BY JQUERY IF BROWSER IS OUTSIDE CHINA-->
+    <!-------------------------------->
+    <section name="INSTAGRAM" id="section-instagram" style="display: none">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv" style="padding: 25px 0px;">
+                <div class="onewideseamless onehighseamless contentpane showhim" style="background-image: url(http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/07/28144659/F5IG.png);"></div>
+                <div id="instafeed"></div>
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--SHIPPING PLEDGE--------------->
+    <!-------------------------------->
+    <section name="SHIPPING PLEDGES">
+        <div class="wrapperdiv" style="background-color: #F3F3F3">
+            <div class="bodycontentdiv" style="padding: 5px 0px">
+                <div class="twowideresponsiveseamless contentpane">
+                    <img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/08/18062243/shippingbar12.png" width=100%>
+                </div>
+                <div class="twowideresponsiveseamless contentpane">
+                    <img data-original="http://eap-us-eshop.s3.amazonaws.com/eshop/T360/uploads/2015/07/28144659/f5_free_china_shipping.png" width=100%>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-------------------------------->
+    <!--BLOG POSTS-->
+    <!-------------------------------->
+    <section name="BLOG POSTS">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv" style="padding: 25px 0px">
+                {% paginate blogs["blog"].posts by 2 (fixedPage = 1) %}
+                {{ macro.draw_blog_tile(paginate.results[0]) }}
+                {{ macro.draw_blog_tile(paginate.results[1]) }}
+                {% endpaginate %}
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

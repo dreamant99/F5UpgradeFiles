@@ -1,0 +1,502 @@
+{% extends "layouts/base.twig" %}
+{% set show_multi_currency = true %}
+{% import "snippets/macro.twig" as macro %}
+{% block content %}
+<!-------------------------------->
+<!--TOP DIVIDER------------------->
+<!-------------------------------->
+<section name="TOP DIVIDER">
+    <div class="wrapperdiv divider" style="background-color: white;">
+        <div class="bodycontentdiv">
+            <a href="/">HOME</a> / <a href="/collections/all-grouped">SHOP</a> / <a href="#">{{ product.title | upper }}</a>
+        </div>
+        {#2016/08/19新加#}
+        {% if product.id is not empty %}
+        {%if product.variants or product.images %}
+            {% set resultImages = [] %}
+
+            {% if product.featuredImage and product.featuredImage != ' ' and product.featuredImage != '' %}
+                {%set featureImage = product.featuredImage%}
+                {%set resultImages = resultImages|merge([featureImage]) %}
+            {%endif%}
+
+            {%for productImage in product.images%}
+                {%if productImage not in resultImages%}
+                    {% set resultImages = resultImages|merge([productImage]) %}
+                {%endif%}
+            {%endfor%}
+
+            {%for k, productVariant in product.variants%}
+                {%for k, variantValue in productVariant.validValues%}
+                    {%if variantValue.images | length > 0%}
+                        {%for url in variantValue.images%}
+                            {%set resultImages = resultImages|merge([url]) %}
+                        {%endfor%}
+                    {%endif%}
+                {%endfor%}
+            {%endfor%}
+            {%set productImageList = resultImages %}
+            <input type="hidden" name="productImageListLen" value="{{ productImageList|length }}">
+        {%endif%}
+        {% endif %}
+    </div>
+</section>
+
+<script type="text/javascript">
+	window.product = {{ product | json }};
+    window.device = {{ device | json }};
+</script>
+
+<!-------------------------------->
+<!--PHOTO AND BUY CONTROLS ------->
+<!-------------------------------->
+<section name="KEY INFORMATION">
+    <div class="wrapperdiv">
+        <div class="bodycontentdiv">
+            <div class="frame easyzoom easyzoom--overlay easyzoom--with-thumbnails">
+                {% if featureImage %}
+                <a href="{{ product.featuredImage | imgUrl('xlarge') }}" class="swipebox" title="{{ product.title }}">
+                    <div class="twowidefiller twohighfiller contentpane" style="background-image: url('{{ product.featuredImage | imgUrl('large') }}');">
+                            {% if product.standardPrice and product.salesPrice and product.standardPrice > product.salesPrice %}
+                                <div class="callout large style2">
+                                    <div class="inner success-bg">
+                                        <div class="inner-text">
+                                            {{'product.callout.sale' | t}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="callout large style2"></div>
+                            {% endif %}
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="twowidefiller contentpane" id="product_detail_col" style="text-align: left;">
+                <div id="pd_detailinfo">
+                    <!--show the product name, price-->
+                    <div id="pd_detail_head">
+                        <div class="row">
+                            <div id="pd_title" class="col-md-12">
+                                <div class="header pd-title-header">{{product.title}}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pd_detail_price">
+                        <div class="row pd_price">
+                            <div class="col-md-12">
+                            <span class="pd_standardPrice">
+                                <del id='pd_standardPrice_var'>
+                                    {% if product.standardPrice and product.salesPrice and product.standardPrice > product.salesPrice %}
+                                        {{ store.currency.symbol }}{{ product.standardPrice | priceFormat }}
+                                    {% endif %}
+                                </del>
+                            </span> <span id="pd_currentPrice">
+                                <span id="pd_price_var">
+                                {{ store.currency.symbol }}{% if product.salesPrice %}{{ product.salesPrice | priceFormat }}{% endif %}
+                                </span>
+                            </span>
+                            </div>
+                        </div>
+
+                        <!-- show product related promotions on PC and Pad -->
+                        {% if not device.isPhone and product.relatedPromotions and product.relatedPromotions | length > 0 %}
+                            <div class="promotions">
+                            </div>
+                        {% endif %}
+
+                        <div class="row quantity_available">
+                            <div style="display: none;">
+                                {{'product.detail.availability' | t}}: <span class="product-status"
+                                id="pd_inventory_var">0</span>
+                            <span class="product-status">
+                                {{'product.detail.Instock' | t}} </span>
+
+                            </div>
+
+                            <div class="col-md-12">
+                                <!--stock quantity-->
+                                {% if themeOptions['anw-quantity-display'] == '1' %}
+                                    <span id="pd_productVariant_display">
+                                    {% if product.stockQuantity >= themeOptions['anw-quantity-display-threshold'] %}
+                                            {{ themeOptions['anw-quantity-display-more'] }}
+                                    {% else %}
+                                        {{ themeOptions['anw-quantity-display-less'] }}
+                                    {% endif %}
+                                    </span>
+                                {% elseif themeOptions['anw-quantity-display'] == '3' %}
+                                    <span id="pd_productVariant_display"></span>
+                                {% else %}
+                                    <span> {{'product.detail.Instock' | t}}: </span>
+                                    <span id="pd_productVariant_display"></span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="{% if device.isPhone %}row{% endif %} separate-line">
+
+                    <!-- show product related promotions on Phone -->
+                    {% if device.isPhone and product.relatedPromotions and product.relatedPromotions | length > 0 %}
+                        <div class="promotions {% if product.relatedPromotions | length > 1 %}more-than-one-item{% endif %}">
+                        </div>
+                        <hr class="{% if device.isPhone %}row{% endif %} separate-line">
+                    {% endif %}
+
+                    {% if product.variants %}
+                        <div id="pd_productVariant" class="pd-variant-margin">
+                            <!--show the variant-->
+                            {% for optionId, option in product.variants %}
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 pd-variant-opt">
+                                        <div class="pd-option-name">
+                                            <span class="pd-sku-key-class">{{ option.label }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 pd-options-content">
+                                        {% for val_item in option.validValues %}
+                                            <span tabindex="0" id="option_code_{{optionId}}_{{val_item.id}}" data-uat-key="single-product-variant-{{optionId}}-{{val_item.id}}"
+                                                  optionid="{{optionId}}" optionvalue="{{val_item.id}}" name="pd_option_group_{{optionId}}" class="pd_variants pd-option-style"
+                                    onclick="selectOption(this)" onkeypress="keyboardSelect(this, event)">
+
+                                    {% if themeOptions['anw-enable-variant-display-img'] and val_item.images %}
+                                        <div class="pd-product-option-image-wrapper">
+                                            <img class="img-responsive pd-product-option-image" src="{{ val_item.images[0] | imgUrl('fingernail') }}" />
+                                        </div>
+                                    {% else %}
+                                        &nbsp;{{val_item.value}}&nbsp;
+                                    {% endif %}
+                                                <i class="icon icon-variantselectedmark pd-variant-selected-icon"></i>
+
+                                </span>
+
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                        <hr class="{% if device.isPhone %}row{% endif %} separate-line">
+                    {% endif %}
+
+                    <!--show the product quanity, inventory, and button of add to shopping cart-->
+                    <div id="quantity_buyinfo" class="row pd-quantity-info ">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 pd-input-quantity-style" id="input-quantity-group">
+                            <div class="input-group pd-input-group-mobile">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default quantity-btn pd-quantity-minus-button"
+                                        onClick="updateQuantity(-1)" data-uat-key="single-product-minus-quantity"><i class="icon icon-minus"></i></button>
+                            </span> <input id="pd_quanity_var" data-uat-key="single-product-input-quantity" class="form-control pd_quantity_number pd-quantity-input"
+                                           type="text" value="1" onkeyup="value=this.value.replace(/\D+/g,'')" onbeforepaste="value=this.value.replace(/\D+/g,'')"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default quantity-btn pd-quantity-plus-button"
+                                        onClick="updateQuantity(1)" data-uat-key="single-product-plus-quantity"><i class="icon icon-add"></i></button>
+                            </span>
+                            </div>
+                            {% if product.salesUom %}
+                                <div class="pd-product-unit">{{ product.salesUom }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="pd-fixed-bottom">
+
+                            <div class="col-lg-6 col-sm-6 col-xs-6 pd-add-to-cart-div">
+                                <button type="submit" id="pd_buynow_var" class="btn btn-primary" role="button"
+                                        data-uat-key="single-product-buynow">
+                                    {{'Buy.Now' | t}}
+                                </button>
+                            </div>
+                            <div class="col-lg-6 col-sm-6 col-xs-6 pd-add-to-cart-div ">
+                                <input type="hidden" id="siteurl" value="{{ store.siteUrl }}">
+                                <button type="button" id="pd_addtocart_var" class="btn btn-default" role="button"
+                                        data-uat-key="single-product-add2cart">
+                                    {{'product.detail.Add2cart' | t}}
+                                </button>
+                            </div>
+                            <div class="add2cart-warning col-xs-12 "></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-------------------------------->
+<!--DESCRIPTION------------------->
+<!-------------------------------->
+<section name="DESCRIPTION">
+    <div class="wrapperdiv">
+        <div class="bodycontentdiv">
+            <div class='product-description'>
+                {{ product.content }}
+            </div>
+        </div>
+    </div>
+</section>
+<!-------------------------------->
+<!--VARIANT IMAGES OR DETAILS----->
+<!-------------------------------->
+{# crude way to calculate how many images are attached to variants #}
+{% set counter = "" %}
+{% for variant in product.variants %}
+    {% for validValue in variant.validValues %}
+        {% for image in validValue.images %}
+            {% if image != null and image != '' and image != ' ' %}
+                {% set counter = [counter, "X"] | join  %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endfor %}
+<section name="VARIANT IMAGES">
+    <div class="wrapperdiv" style="background-color: #dedede;">
+        <div class="bodycontentdiv">
+            {% if counter|length == 0 %}
+                <div class="twoblockpadding onehigh contentpane"></div>
+                {% for i in 1..2 %}
+                    {{ macro.draw_product_photo(product.images[i],"onewide onehighrigid contentpane", "") }}
+                {% endfor %}
+            {% else %}
+                {% if counter|length == 1 %}
+                    <div class="oneblockpadding onehigh contentpane"></div>
+                {% elseif counter|length == 2 %}
+                    <div class="twoblockpadding onehigh contentpane"></div>
+                {% elseif counter|length == 3 %}
+                    <div class="threeblockpadding onehigh contentpane"></div>
+                {% endif %}
+                {% for variant in product.variants %}
+                    {% for validValue in variant.validValues %}
+                        {% for image in validValue.images %}
+                            {% if image != null and image != '' and image != ' ' %}
+                                {{ macro.draw_product_photo(image,"onewide onehighrigid contentpane", "") }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+<!-------------------------------->
+<!--PRODUCT IMAGES---------------->
+<!-------------------------------->
+<section name="PRODUCT IMAGES">
+    <div class="wrapperdiv">
+        <div class="bodycontentdiv">
+            <!-- TERRIBLE CODE WHICH NEEDS REWRITING TO HANDLE THE TYPES OF IMAGE CLUSTERS -->
+            {% if counter|length == 0 %}
+                {% set imgfrom = 3 %}
+                {% set imgto = 4 %}
+            {% else %}
+                {% set imgfrom = 1 %}
+                {% set imgto = 2 %}
+            {% endif %}
+
+            {% for i in imgfrom..imgto %}
+                {% if product.images[i] != null and product.images[i] != '' and product.images[i] != ' ' %}
+                    {{ macro.draw_product_photo(product.images[i],"twowideresponsive onehigh contentpane", "") }}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-------------------------------->
+<!--SPECIFICATIONS AND PLEDGE----->
+<!-------------------------------->
+<section name="SPECIFICATIONS">
+    <div class="wrapperdiv">
+        <div class="bodycontentdiv" style="width: 100%; max-width: 480px;">
+            <div class='contentpane product-info' style="width: 95%;">
+                {{ product.shortDescription }}
+            </div>
+        </div>
+    </div>
+</section>
+<!-------------------------------->
+<!--LIFESTYLE PHOTOS-------------->
+<!-------------------------------->
+<section name="LIFESTYLE IMAGES">
+    <div class="wrapperdiv">
+        <!-- TERRIBLE CODE WHICH NEEDS REWRITING TO HANDLE THE TYPES OF IMAGE CLUSTERS -->
+        {% if counter|length == 0 %}
+            {% set imgfrom = 5 %}
+            {% set imgto = 6 %}
+        {% else %}
+            {% set imgfrom = 3 %}
+            {% set imgto = 4 %}
+        {% endif %}
+
+        {% for i in imgfrom..imgto %}
+            {% if product.images[i] != null and product.images[i] != '' and product.images[i] != ' ' %}
+                {{ macro.draw_product_photo(product.images[i],"halfpageresponsive contentpane", "height: 350px;") }}
+            {% endif %}
+        {% endfor %}
+
+    </div>
+</section>
+<!----------------------------------->
+<!--FRAME OR PRODUCT SPECIFICATIONS-->
+<!----------------------------------->
+{% set frameproductids = [100000381,100000380,100000379,100000378,100000377,100000386,100000388] %}
+{% set specificationproductids = [100000381,100000380,100000379,100000378,100000377,100000016,100000033,100000386,100000388] %}
+{% if product.id in specificationproductids %}
+    <section name="PRODUCT SPECIFICATIONS">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv">
+                <div style="margin: 0 auto;">
+                    <div class="frame easyzoom easyzoom--overlay easyzoom--with-thumbnails">
+                        <a href="{{ product.images[8] }}" class="swipebox" title="{{ product.title }}">
+                            <img width="100%" src="{{ product.images[8] }}">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endif %}
+<!-------------------------------->
+<!--FRAME DETAIL------------------>
+<!-------------------------------->
+{% if product.id in frameproductids %}
+    <section name="FRAME DETAIL">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv">
+                <div class='product-description'>
+                    <p><strong>Sizing</strong></p>
+                    <p>Sizing measurements are from the centre of the BB Shell to the top of the Top Tube (known as C-T).</p>
+                    <p>If you&#8217;re looking for the right frame size, we recommend the rule of standover height. In normal riding footwear, with a shoulder width stance, measure the distance from your crotch straight down to the floor. Divide this number by 1.5 (in CM) for a suggested frame height. More details in our <a title="Factory Five FAQ" href="/pages/faq" target="_blank">FAQ</a></p>
+                    {% if product.id == 100000381 %}
+                        <p><strong>Flamed Finish</strong></p>
+                        <p>Important note about our Flamed treatment: Steel is continuously oxidising. We apply a protective coating to these frames which is clear and shows the metal underneath. We do not use primer or paint which would be opaque and mask the finish. Therefore, veins or patches of rust may appear over time and emerge through the clear-coat. The speed at which this happens is entirely due to the atmosphere and may be immediate or have started already, or may not happen at all.</p>
+                    {% endif %}
+                    <p><strong>Lead Times</strong></p>
+                    <p>We try to maintain a rolling stock of all frames in the most common sizes. We are sometimes working through a backlog, so lead times may apply &#8211; please get in touch for more details.</p>
+                    <p>If you are thinking to build this up into a complete bike, we stock a comprehensive range of components in the workshop, get in touch for a quote. For more inspiration, check out the <a title="Factory Five Portfolio" href="/pages/portfolio">Portfolio</a>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endif %}
+<!-------------------------------->
+<!--PORTFOLIO BUILDS-------------->
+<!-------------------------------->
+{% if product.id in frameproductids %}
+    <section name="DESCRIPTION">
+        <div class="wrapperdiv">
+            <div class="bodycontentdiv">
+                {% paginate blogs['portfolio'].posts by 4 (fixedPage = 1) %}
+                {% for post in paginate.results %}
+                    {% set imagefind = post.content | split('src="') %}
+                    {% set imagefind = imagefind[1] | split('"') %}
+                    {% set firstimage = imagefind[0] %}
+                    {# random(['onewide onehigh']) #}
+                    {# random(['onewide onehigh', 'twowide onehigh', 'twowide twohigh']) #}
+                    <a href="/{{ post.url }}">
+                        <div class="{{ random(['onewide onehigh']) }} contentpane {{ cycle(['', '', '' , "oddoneout"], loop.index0) }}">
+                            <div class="{{ random(['onewide onehigh']) }} img-lazy" data-original="{{ firstimage }}"></div>
+                        </div>
+                    </a>
+                {% endfor %}
+                {% endpaginate %}
+            </div>
+        </div>
+    </section>
+{% endif %}
+<!-------------------------------->
+<!--RELATED PRODUCTS-------------->
+<!-------------------------------->
+<section name="RELATED PRODUCTS">
+    <div class="wrapperdiv">
+        <div  class="bodycontentdiv">
+   {% if themeOptions['anw-enable-related-product'] %} {{ renderWidget('RelatedProducts', 8) }} {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- add to cart status message modal -->
+<div class="add-to-cart-popup modal" tabindex="-1"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <i id="add-status-icon" class="icon"></i><span id='add-status-message'></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="cart-animation">1</div>
+<div class="modal fade" id="img-original-shown" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <img src="" class="img-responsive">
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ "/slick-carousel/1.3.15/slick.css" | thirdPartyAssetUrl | stylesheetTag }}
+    {% if device.isPhone %}
+        {{ "//cdnjs.cloudflare.com/ajax/libs/jquery.swipebox/1.4.1/css/swipebox.min.css" | stylesheetTag }}
+    {% endif %}
+	{{ "lib/bootstrap-rating/bootstrap-rating.css" | assetUrl | stylesheetTag }}
+	{{ "css/product.css" | assetUrl | stylesheetTag }}
+	{{ "css/product-review.css" | assetUrl | stylesheetTag }}
+    {{ "css/richText.css" | globalAssetUrl | stylesheetTag  }}
+{% endblock %}
+{% block scripts %}
+	{{ 'lib/bootstrap-rating/bootstrap-rating.min.js' | assetUrl | scriptTag }}
+	{{ '/bootstrap-paginator.js' | thirdPartyAssetUrl | scriptTag }}
+    {{ "/slick-carousel/1.3.15/slick.min.js" | thirdPartyAssetUrl | scriptTag}}
+    {{ 'js/easyzoom.js' | assetUrl | scriptTag }}
+    {% if device.isPhone %}
+        {{ "//cdnjs.cloudflare.com/ajax/libs/jquery.swipebox/1.4.1/js/jquery.swipebox.min.js" | scriptTag }}
+        <script type="text/javascript">
+            ( function( $ ) {
+                $( '.swipebox' ).swipebox();
+            } )( jQuery );
+        </script>
+    {% endif %}
+	{{ 'js/add-to-cart-animation.js' | assetUrl | scriptTag }}
+	{{ 'js/product.js' | assetUrl | scriptTag }}
+	{{ 'js/product-review.js' | assetUrl | scriptTag }}
+
+    <script id="promotionsTemplate" type="text/x-handlerbars-template">
+        {{ _self.promotionsTemplate() }}
+    </script>
+    <script id="mobilePromotionsTemplate" type="text/x-handlerbars-template">
+        {{ _self.mobilePromotionsTemplate() }}
+    </script>
+{% endblock %}
+
+{% macro promotionsTemplate() %}
+    {% verbatim %}
+        {{#each promotions as |promotion| }}
+        <div class="promotion-item">
+            <i class="icon icon-promotion"></i>
+            <span>{{ promotion }}</span>
+        </div>
+        {{/each}}
+    {% endverbatim %}
+{% endmacro %}
+
+{% macro mobilePromotionsTemplate() %}
+    {% verbatim %}
+        {{#each promotions as |promotion| }}
+            <div class="promotion-item">
+                <i class="icon icon-promotion"></i>
+                <span>{{ promotion }}</span>
+            </div>
+        {{/each}}
+        {{#gt promotions.length 1 }}
+            <div class="promotion-show-more">
+                <i class="icon icon-dropdownarrow"></i>
+            </div>
+        {{/gt}}
+    {% endverbatim %}
+{% endmacro %}

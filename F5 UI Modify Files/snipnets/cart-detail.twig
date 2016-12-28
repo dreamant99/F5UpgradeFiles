@@ -1,0 +1,120 @@
+{% import "snippets/macro.twig" as macro %}
+<nav class="side-menu mm-menu mm-vertical mm-offcanvas" style = "display:none">
+    <div id="app" class="img-container" data-ratio="0.75">
+        <ul class="menu-section">
+            {% if customer.isLoggedIn %}
+                <li class="main-menu">
+                    <a class="mm-label account-text"
+                       title="{% if customer.displayName %}{{ customer.displayName }}{% else %}{{ customer.email }}{% endif %}" href="javascript:void(0);" data-target="#">
+                        {{ 'account.hi' | t }} {% if customer.displayName %}{{ customer.displayName }}{% else %}{{ customer.email }}{% endif %}
+                    </a>
+                    <i class="icon icon-downwardarrow"></i>
+                </li>
+                <ul class="submenu my-account-submenu">
+                    <li>
+                        <a href="{{ store.httpsLink }}/my/account" data-uat-key="sidemenu-profile">
+                            &nbsp;{{ 'common.label.myAccount' | t }}
+                        </a>
+                    </li>
+                    <li class="btn-li">
+                        <span>
+                            <a class="text-center btn" data-uat-key="sidemenu-logout-link"
+                               href="{{ store.httpsLink }}/logout"
+                               data-target="#">{{ 'common.label.logout' | t }}</a>
+                        </span>
+                    </li>
+                </ul>
+            {% else %}
+                <li class="main-menu login-logout-li">
+                    <a class="mm-label"
+                       title="{{ customer.email }}" href="{{ store.httpsLink }}/login" data-target="#">
+                        {{ 'common.label.login' | t }} / {{ 'common.label.signup' | t }}
+                    </a>
+                </li>
+            {% endif %}
+
+            {% set brand = themeOptions['occ_eshop_brand'] | default('default-menu')  %}
+            {% if menuSets[brand].hasItems %}
+                {% for item in menuSets[brand].menuItems %}
+                    <li data-uat-key="side-brandmenu-menu-{{ item.id }}" class="main-menu brand-menu-li">
+                        <a href="{% if item.hasChild %} javascript:void(0); {% else %} {{ item.link }} {% endif %}" target="{{ item.target }}">{{ item.title }}
+                        </a>
+                        {% if item.hasChild %}
+                            <i class="icon icon-downwardarrow"></i>
+                        {% endif %}
+                    </li>
+                    {% if item.hasChild %}
+                        <ul class="submenu {% if themeOptions['anw-menu-' ~ item.id ~ '-enable'] %}products{% endif %}">
+                            {% if themeOptions['anw-menu-' ~ item.id ~ '-enable'] %}
+
+                                <li class="menu-img">
+                                <a href="{{ item.link }}" class="submenu-pic line-item-first">
+                                    <div class="img-wrapper">
+                                        <i class="icon icon-5x icon-viewall"></i>
+                                    </div>
+                                    <p> {{ item.title }} </p>
+                                </a>
+
+                                {% for subitem in item.children %}
+                                    {% if loop.index % 2 == 0 %}
+                                        <li class="menu-img">
+                                    {% endif %}
+                                    <a href="{{ subitem.link }}" class="submenu-pic {% if loop.index % 2 == 0 %}line-item-first{% else %}line-item-second{% endif %}">
+                                        <div class="img-wrapper">
+                                            <img src="{% if themeOptions['anw-menu-submenu-img-' ~ subitem.id]['url'] %}{{ themeOptions['anw-menu-submenu-img-' ~ subitem.id]['url'] }}{% else %}{{  default_thumbnail_src }}{% endif %}" alt="{{ subitem.title }}">
+                                        </div>
+                                        <p> {{ subitem.title }} </p>
+                                    </a>
+                                    {% if loop.index % 2 == 1 %}
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <li data-uat-key="fp-inner-menu-{{ item.title }}">
+                                    <a href="{{ item.link }}" target="{{ item.target }}">
+                                        {{ item.title }}
+                                    </a>
+                                </li>
+                                {% for subitem in item.children %}
+                                    <li data-uat-key="fp-menu-{{ subitem.title }}">
+                                        <a href="{{ subitem.link }}" target="{{ subitem.target }}">
+                                            {{ subitem.title }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <li data-uat-key="side-brandmenu-menu-blog" class="main-menu brand-menu-li">
+                <a href="blogs/all">BLOG</a>
+            </li>
+            <li data-uat-key="side-brandmenu-menu-portfolio" class="main-menu brand-menu-li">
+                <a href="/pages/portfolio">PORTFOLIO</a>
+            </li>
+            <li data-uat-key="side-brandmenu-menu-find-us" class="main-menu brand-menu-li">
+                <a href="/pages/find-us">FIND US</a>
+            </li>
+
+            {% if show_multi_currency %}
+                <li class="Label Spacer text-center"></li>
+                {% include ['snippets/multi-currency-m.twig' | m] %}
+            {% endif %}
+
+            {% if themeOptions['anw-enable-header-social'] %}
+                <li class="main-menu social">
+                    {% for index in range(1, 5) %}
+                        {% if themeOptions['anw-header-social-type-' ~ index].icon | length > 0  %}
+                            <a class="header-icon" data-uat-key="fp-social-link-{{ index }}" href="{{ themeOptions['anw-header-social-account-' ~ index] }}">
+                                <i class="icon {{ themeOptions['anw-header-social-type-' ~ index].icon }}"></i>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </li>
+            {% endif %}
+
+        </ul>
+    </div>
+</nav>

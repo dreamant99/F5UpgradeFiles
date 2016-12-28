@@ -1,0 +1,102 @@
+{% import "snippets/macro.twig" as macro %}
+
+<!-------------------------------->
+<!--FOOTER-->
+<!-------------------------------->
+<section name="FOOTER">
+    <div class="wrapperdiv" style="background-color: #f5f5f5;">
+        <div class="bodycontentdiv" style="padding: 0px">
+            <div class="onewide contentpane greylinks">
+                <div class="footertitle">WE BUILD</div>
+                <div><a href="/pages/our-story">Our Story</a></div>
+                <div><a href="/pages/ordering-and-payment">Ordering and Payment</a></div>
+                <div><a href="/pages/shipping-and-returns">Shipping and Returns</a></div>
+                <div><a href="/pages/workshop">The Workshop</a></div>
+                <div><a href="/pages/faq">FAQ</a></div>
+                <div><a href="/pages/factory-five-stockists">Worldwide Stockists</a></div>
+            </div>
+            <div class="onewide contentpane greylinks">
+                <div class="footertitle">WE RIDE</div>
+                <div><a href="/blogs/events">F5 Events</a></div>
+                <div><a href="/pages/what-is-fixed-gear">Fixed Gear, you what?</a></div>
+                <div><a href="/pages/custom-bike-design">Custom Bike Design</a></div>
+                <div><a href="/pages/newsletter">Subscribe to our Newsletter</a></div>
+                <div><a href="/blogs/second-hand">Second Hand Bikes</a></div>
+                <div><a href="/pages/brands-we-carry">Brands We Carry</a></div>
+            </div>
+            <div class="onewide contentpane oddoneout hideontiny greylinks">
+                <div class="footertitle">BY FACTORY FIVE</div>
+                <div><a href="/products/f5-titan-stem/">TITAN STEM</a></div>
+                <div><a href="/products/product-f5pista-flame/">F5Pista track</a></div>
+                <div><a href="/products/product-f550-satin/">F550 fixed gear</a></div>
+                <div><a href="/products/product-f5-lattice-chainring/">Lattice Chainring</a></div>
+                <div><a href="/collections/apparel">Riding Apparel</a></div>
+                <div><a href="/collections/gear">Accessories</a></div>
+                {# <div><a href="/collections/f5-select">F5-Select Components</a></div> #}
+            </div>
+            <div class="onewide contentpane greylinks">
+                <div class="footertitle"><a href="/pages/find-us" class="footertitle">FIND US</a></div>
+                <div><a href="/pages/find-us">667 Changhua Rd, Shanghai</a></div>
+                <div>shoutout@wearefactoryfive.com</div>
+                <div>&nbsp;</div>
+                <div>Closed Monday</div>
+                <div>Tue-Friday: 10h30 to 21h00</div>
+                <div>Sat-Sunday: 13h00 to 19h00</div>
+            </div>
+        </div>
+    </div>
+    <div class="wrapperdiv" style="background-color: #FFFFFF;">
+        <div class="bodycontentdiv" style="padding: 0px; text-align: center;">
+            copyright 2015 Factory Five
+        </div>
+    </div>
+</section>
+
+{% if 1>1 %}
+    <div class="upper-footer">
+        <div class="{% if device.isDesktop %}container{% else %}container-fluid{% endif %}">
+            <div class="footer-box">
+                {#{% if themeOptions['anw-footer-section1-enable'] %}#}
+                {#<div class="col-xs-12 col-sm-12 col-md-2">#}
+                {#<div class="header smallest">{{ themeOptions['anw_footer_section1_title'] }}</div>#}
+                {#{{ macro.contact_us(themeOptions) }}#}
+                {#</div>#}
+                {#{% endif %}#}
+
+                {% for index in range(1, 6) %}
+                    {% if themeOptions['anw-footer-section' ~ index ~ '-enable'] %}
+                        <div class="footer-section">
+                            <div class="header smallest">{{ themeOptions['anw_footer_section' ~ index ~ '_sectionname'] }}</div>
+                            {{ macro.footer_section(themeOptions, index) }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-footer">
+        <div class="{% if device.isDesktop %}container{% else %}container-fluid{% endif %}">
+            <div class="row">
+                <div class="col-xs-6 col-md-9 social-icons">
+                    {% if themeOptions['anw-enable-header-social'] %}
+                        {% for index in range(1, 5) %}
+                            {% if themeOptions['anw-header-social-type-' ~ index].icon | length > 0  %}
+                                <a data-uat-key="fp-social-link-{{ index }}" {% if  themeOptions['anw-header-social-account-' ~ index] != "" %}href="{{ themeOptions['anw-header-social-account-' ~ index] }}"{% endif %}>
+                                    <i class="icon {{ themeOptions['anw-header-social-type-' ~ index].icon }}"></i>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6 col-md-9 copyright">
+                    {{ themeOptions['anw_footer_copyright_text'] }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% include 'snippets/olark.twig' %}

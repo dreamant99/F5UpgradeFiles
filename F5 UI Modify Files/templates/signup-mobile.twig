@@ -1,0 +1,24 @@
+{% extends "layouts/base.twig" %}
+{% block page_title %} {{ 'user.login.title' | t }} &nbsp; {{ 'user.signup.title' | t }} {% endblock %}
+{% block stylesheets %}
+	{{ "css/login.css" | assetUrl | stylesheetTag  }}
+{% endblock %}
+{% block scripts %}
+	{{ "js/login.js" | assetUrl | scriptTag  }}
+    {% if store.channelAccountType == 'mobile' %}
+      {{ "js/mobile-account.js" | globalAssetUrl | scriptTag }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+	<!-------------------------------->
+	<!--TOP DIVIDER-->
+	<!-------------------------------->
+	<section name="TOP DIVIDER">
+		<div class="wrapperdiv divider" style="background-color: white;">
+			<div class="bodycontentdiv" style="max-width: 750px;">
+			</div>
+		</div>
+	</section>
+	{% include 'snippets/login-signup-mobile.twig' with {'isLogin': false} %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% if store.currencyList | length > 1 %}
+	SHOW PRICES IN
+	{% for cur in store.currencyList %}
+		{% if cur.code == "RMB" %}
+			{% set currency = "CNY" %}
+		{% else %}
+			{% set currency = cur.code %}
+		{% endif %}
+		/ <a class="currency-item" href="javascript:void(0);" data-code="{{ cur.code }}">
+		<span class="currency-code">{{ cur.symbol | trim }}{{ currency }}</span>
+	</a>
+	{% endfor %}
+	<br />
+{% endif %}
+
+{% if store.currencyList | length == 1 %}
+<div class="mc-choose">
+	<a class="mc-current">{{ store.currency.code }}&nbsp;<i class="icon icon-dropdownarrow icon-lg"></i></a>
+	<!-- drop down list -->
+	<div class="mc-dropdown">
+		<div class="arrow-up"></div>
+		<ul class="mc-dropdown-box">
+			{% for cur in store.currencyList %}
+				{% if loop.index % 15 == 1 %} <!-- Put every 15 items in a single column. -->
+					<li class="item-column">
+				{% endif %}
+				{% if cur.code != store.currency.code %} <!-- Do not display the current curreny -->
+					<div class="mc-dropdown-item">
+						<a class="currency-item" href="javascript:void(0);" data-code="{{ cur.code }}">
+							<span class="currency-code">{{ cur.code }}&nbsp;{{ cur.symbol }}</span>
+						</a>
+					</div>
+				{% endif %}
+				{% if loop.last or loop.index % 5 == 0 %} <!-- Put every 15 items in a single column. -->
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+{% endif %}

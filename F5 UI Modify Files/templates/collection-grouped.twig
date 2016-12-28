@@ -1,0 +1,176 @@
+{% extends "layouts/base.twig" %}
+{% set show_multi_currency = true %}
+{% import "snippets/macro.twig" as macro %}
+{% block content %}
+    <!-------------------------------->
+    <!--TOP DIVIDER-->
+    <!-------------------------------->
+    {% if menuSets['default-menu'].hasItems %}
+        <section name="TOP DIVIDER">
+            <div class="wrapperdiv divider" style="background-color: white;">
+                <div class="bodycontentdiv">
+                    <div class="central hideontiny">
+                        <div>
+                            <ul>
+                                {% for item in menuSets['default-menu'].menuItems %}
+                                    <li class="{{ (loop.index == 1) ? 'productborder blacklinks' : 'productbg productborder' }}">
+                                        <a class="whitelink" href="{% if device.isDesktop or (device.isPad and not item.hasChild) %}{{ item.link }}{% else %}#{% endif %}" target="{{ item.target }}">
+                                            {#{% if item.link matches '/\\/collections\\/'~ collection.slug ~'/' %}#}
+                                            {#selected#}
+                                            {#{% endif %}#}
+                                            {{ item.title | upper }}
+                                        </a><br />
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <!--------------------->
+    <!--LIST OF PRODUCTS -->
+    <!--------------------->
+    <div class="{% if device.isDesktop %}content-wrapper{% else %}content-wrapper-no-padding{% endif %}">
+        <div class="{% if device.isDesktop %}container{% else %}container-fluid{% endif %}">
+            <form id="variant_form" method="get" action="{{ store.httpLink }}/{{ collection.url }}">
+                <div class="product-list-wrapper">
+                    <input id="collection_slug" type="hidden" value="{{ collection.slug }}">
+                    <input id="collection_product_count" type="hidden" value="{{ collection.productsCount }}">
+
+                    <div class="product-list-main">
+
+                        {# products #}
+
+                        <div class="grouped-list-header"><h4>FRAMES</h4></div>
+                        <div class="product-list-items">
+                            {% paginate collections["frames"].products by 16 (fixedPage=1) %}
+                            <div class="row product-list-items img-container">
+                                {% for product in paginate.results %}
+                                    {{ macro.product_list_individual_product(product, store) }}
+                                {% endfor %}
+                            </div>
+                            {% endpaginate %}
+                        </div>
+                        <div class="grouped-list-header"><h4>PARTS</h4></div>
+                        <div>
+                            {% paginate collections["parts"].products by 16 (fixedPage=1) %}
+                            <div class="row product-list-items img-container">
+                                {% for product in paginate.results %}
+                                    {{ macro.product_list_individual_product(product, store) }}
+                                {% endfor %}
+                            </div>
+                            {% endpaginate %}
+                        </div>
+                        <div class="grouped-list-header"><h4>GEAR</h4></div>
+                        <div>
+                            {% paginate collections["gear"].products by 16 (fixedPage=1) %}
+                            <div class="row product-list-items img-container">
+                                {% for product in paginate.results %}
+                                    {{ macro.product_list_individual_product(product, store) }}
+                                {% endfor %}
+                            </div>
+                            {% endpaginate %}
+                        </div>
+                        <div class="grouped-list-header"><h4>APPAREL</h4></div>
+                        <div>
+                            {% paginate collections["apparel"].products by 16 (fixedPage=1) %}
+                            <div class="row product-list-items img-container">
+                                {% for product in paginate.results %}
+                                    {{ macro.product_list_individual_product(product, store) }}
+                                {% endfor %}
+                            </div>
+                            {% endpaginate %}
+                        </div>
+
+                    </div>
+                </div>
+                {% if device.isPhone %}
+                    {# modal for filter #}
+                    <div class="product-list-modal product-filter-modal">
+                        <div class="modal-head">
+                            <span class="modal-done"><i class="icon icon-theme3ok"></i></span>
+                            <span>{{ 'productlist.filter'|t }}</span>
+                            <span class="modal-cancel"><i class="icon icon-theme3cancel"></i></span>
+                        </div>
+                        {% if collection.filters|length>0 %}
+                            <div class="product-list-filter">
+                                {% for key, value in collection.filters %}
+                                    <div class="variant-filter">
+                                        <div class="toggle-option option-name unwind">
+                                            <i class="icon icon-upwardarrow"></i>{{ value['name'] }}
+                                        </div>
+                                        <div class="toggle-option-value option-value-{{ index }}">
+                                            {% for k, v in value['value'] %}
+                                                {% if value['type'] == 'id' %}
+                                                    {% set opt_value = k %}
+                                                {% else %}
+                                                    {% set opt_value = v.name %}
+                                                {% endif %}
+
+                                                {% set opt_id = key ~ ":" ~ opt_value %}
+                                                <input type="checkbox" id="{{ opt_id }}" name="options[]"
+                                                       value="{{ opt_id }}"
+                                                       {% if v.checked %}checked="checked"{% endif %}><label
+                                                    class="variant-name" for="{{ opt_id }}">{{ v.name }}<i
+                                                        class="icon icon-variantselectedmark option-selected-icon"></i></label>
+
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {# end modal for filter #}
+
+                    {# modal for sort #}
+                    <div class="product-list-modal product-sort-modal">
+                        <div class="modal-head">
+                            <span class="modal-done"><i class="icon icon-theme3ok"></i></span>
+                            <span>{{ 'productlist.sort'|t }}</span>
+                            <span class="modal-cancel"><i class="icon icon-theme3cancel"></i></span>
+                        </div>
+                        <div class="product-list-filter">
+                            <div class="sort-filter">
+                                {% set orderbys = collection.sortOptions %}
+                                {% set selected = collection.currentSortOption %}
+                                {% for key, value in orderbys %}
+                                    <div class="sort-key">{{ key | t }}</div>
+                                    <div class="sort-values">
+                                        {% for orderby in value %}
+                                            <input type="radio" id="sort_{{ orderby.id }}" name="orderby"
+                                                   {% if selected == orderby.id %}checked="checked"{% endif %}
+                                                   value="{{ orderby.id }}">
+                                            <label for="sort_{{ orderby.id }}" class="sort-order"
+                                                   data-uat-key="orderby-{{ orderby.id }}">{{ orderby.name | t }}</label>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {# modal for sort #}
+
+                {% endif %}
+            </form>
+
+        </div>
+    </div>
+    {# end content #}
+
+{% endblock %}
+{% block stylesheets %}
+    {{ 'css/collection.css' | assetUrl | stylesheetTag }}
+    {{ 'css/error.css' | assetUrl | stylesheetTag }}
+{% endblock %}
+{% block scripts %}
+    {{ 'js/collection.js' | assetUrl | scriptTag }}
+    <script type="text/javascript">
+        $(function () {
+            $(window).off("scroll.collection");
+        });
+    </script>
+{% endblock %}

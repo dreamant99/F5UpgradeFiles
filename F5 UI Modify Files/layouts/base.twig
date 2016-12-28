@@ -1,0 +1,165 @@
+{% block html_head_container %}
+<!doctype html>
+<!--[if lt IE 7]>
+<html class="no-js ie ie6 lt-ie9 lt-ie8 lt-ie7" lang="{{ store.language }}"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js ie ie7 lt-ie9 lt-ie8" lang="{{ store.language }}"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js ie ie8 lt-ie9" lang="{{ store.language }}"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="{{ store.language }}"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8"/>
+    <title>{% block page_title %}{{ seoTitle }}{% endblock %}</title>
+    <meta name="description" content="{{ seoDescription}}">
+    {% if canonical is not empty %}
+    <link rel="canonical" href="{{ canonical }}" />
+    {% endif %}
+    {% if themeOptions['occ_eshop_use_custom_favicon'] %}
+        <link rel="icon" href="{{ themeOptions['occ_eshop_custom_favicon'] }}" type="image/x-icon"/>
+    {% else %}
+        <link rel="icon" href="{{ "images/favicon.ico" | globalAssetUrl }}" type="image/x-icon"/>
+    {% endif %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="renderer" content="webkit">
+
+    {% if device.isMobile %}
+        {{ "/jQuery.mmenu/5.5.3/core/css/jquery.mmenu.all.css" | thirdPartyAssetUrl | stylesheetTag }}
+    {% endif %}
+    {{ "css/iconfont.css" | globalAssetUrl | stylesheetTag  }}
+    {{ "css/bootstrap.css" | assetUrl | stylesheetTag  }}
+    {{ "css/common.css" | assetUrl | stylesheetTag  }}
+    {{ "css/banner.css" | assetUrl | stylesheetTag  }}
+    {{ "css/footer.css" | assetUrl | stylesheetTag  }}
+    {{ "css/widget.css" | assetUrl | stylesheetTag  }}
+    {{ "css/menu.css" | assetUrl | stylesheetTag  }}
+    {{ "css/multi-currency.css" | assetUrl | stylesheetTag  }}
+    {% block stylesheets %}{% endblock %}
+    <script type="text/javascript">
+        window.siteurl = "{{ store.siteUrl }}";
+        window.httpLink = "{{ store.httpLink }}";
+        window.httpsLink = "{{ store.httpsLink }}";
+        window.securityToken = "{{ securityToken }}";
+        window.errorCodes = {{ errorCodes | json }};
+        window.themeOptions = {{ themeOptions | json }};
+    </script>
+</head>
+{% endblock %}
+<body class="{{ body_class }}" data-template="base.twig">
+
+{% if device.isDesktop is empty %}
+
+{% endif %}
+
+<div id="page" class=" body-bg ">
+    <header>
+        {% block header %}
+            {% include 'snippets/fixed-top-header.twig' %}
+        {% endblock %}
+
+        {% if device.isDesktop %}
+            {% include 'snippets/header.twig' %}
+        {% endif %}
+
+        {% block logo %}
+
+        {% endblock %}
+
+        {% include 'snippets/menu.twig' | m %}
+
+    </header>
+
+    <section id="content" role="main">
+        {% if themeOptions['anw-enable-promotion'] %}
+            <div class="container-fluid promotion">
+                <div class="row text-center">
+                    <div class="inner">
+                        <a href="{{ themeOptions['anw_promotion_url'] }}">
+                            <h4>{{ themeOptions['anw_promotion_text'] }}</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% block content %}
+            Sorry, no content
+        {% endblock %}
+
+    </section>
+    {#{% if device.isDesktop %}#}
+    {% if 1 == 1 %}
+        {% block footer %}
+            <footer id="footer" class="footer">
+                {% include 'snippets/footer.twig' %}
+            </footer>
+        {% endblock %}
+    {% endif %}
+</div>
+{{ "/jquery-1.11.3.min.js" | thirdPartyAssetUrl | scriptTag }}
+{{ "/bootstrap/3.3.0/js/bootstrap.min.js" | thirdPartyAssetUrl | scriptTag }}
+{{ "/holder/2.8.1/holder.min.js" | thirdPartyAssetUrl | scriptTag }}
+{{ "/jquery_lazyload/1.9.5/jquery.lazyload.min.js" | thirdPartyAssetUrl | scriptTag }}
+{{ "/jquery.validate/1.14.0/jquery.validate.min.js" | thirdPartyAssetUrl | scriptTag }}
+{{ "/jquery.validate/1.14.0/additional-methods.min.js" | thirdPartyAssetUrl | scriptTag }}
+{% if store.language == "zh_CN" %}
+    {{ ("/jquery.validate/1.14.0/localization/messages_zh.js") | thirdPartyAssetUrl | scriptTag }}
+{% endif %}
+{{ "/handlebars.js/3.0.3/handlebars.min.js" | thirdPartyAssetUrl | scriptTag }}
+<!--[if IE 8]>
+{{ "/respond.js/1.4.2/respond.min.js" | thirdPartyAssetUrl | scriptTag }}
+{{ "/html5shiv/3.7.2/html5shiv.min.js" | thirdPartyAssetUrl | scriptTag }}
+<![endif]-->
+
+{% if device.isMobile  %}
+    {{ "/jQuery.mmenu/5.5.3/core/js/jquery.mmenu.min.all.js" | thirdPartyAssetUrl | scriptTag }}
+    {% endif %}
+    <script>
+    window.store = {{ store | json }};
+    window.i18n = window.store.i18n;
+</script>
+{{ "js/jsapi.js" | globalAssetUrl | scriptTag }}
+{{ "js/iconFontPlugin.js" | globalAssetUrl | scriptTag  }}
+{{ "js/common.js" | assetUrl | scriptTag }}
+
+{% block scripts %}{% endblock %}
+<script>
+    $(document).ready(function () {
+        $("#collapsingMenu > li > a").not(":first").find("+ ul").slideUp(1);
+        $("#collapsingMenu > li > a").click(function () {
+            $(this).find("+ ul").slideToggle("fast");
+        });
+    });
+</script>
+<script data-cfasync="false" type='text/javascript'>/*<![CDATA[*/window.olark||(function(c){var f=window,d=document,l=f.location.protocol=="https:"?"https:":"http:",z=c.name,r="load";var nt=function(){
+        f[z]=function(){
+            (a.s=a.s||[]).push(arguments)};var a=f[z]._={
+        },q=c.methods.length;while(q--){(function(n){f[z][n]=function(){
+            f[z]("call",n,arguments)}})(c.methods[q])}a.l=c.loader;a.i=nt;a.p={
+            0:+new Date};a.P=function(u){
+            a.p[u]=new Date-a.p[0]};function s(){
+            a.P(r);f[z](r)}f.addEventListener?f.addEventListener(r,s,false):f.attachEvent("on"+r,s);var ld=function(){function p(hd){
+            hd="head";return["<",hd,"></",hd,"><",i,' onl' + 'oad="var d=',g,";d.getElementsByTagName('head')[0].",j,"(d.",h,"('script')).",k,"='",l,"//",a.l,"'",'"',"></",i,">"].join("")}var i="body",m=d[i];if(!m){
+            return setTimeout(ld,100)}a.P(1);var j="appendChild",h="createElement",k="src",n=d[h]("div"),v=n[j](d[h](z)),b=d[h]("iframe"),g="document",e="domain",o;n.style.display="none";m.insertBefore(n,m.firstChild).id=z;b.frameBorder="0";b.id=z+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){
+            b.src="javascript:false"}b.allowTransparency="true";v[j](b);try{
+            b.contentWindow[g].open()}catch(w){
+            c[e]=d[e];o="javascript:var d="+g+".open();d.domain='"+d.domain+"';";b[k]=o+"void(0);"}try{
+            var t=b.contentWindow[g];t.write(p());t.close()}catch(x){
+            b[k]=o+'d.write("'+p().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}a.P(2)};ld()};nt()})({
+        loader: "static.olark.com/jsclient/loader0.js",name:"olark",methods:["configure","extend","declare","identify"]});
+    /* custom configuration goes here (www.olark.com/documentation) */
+    olark.identify('2890-624-10-2082');/*]]>*/</script><noscript><a href="https://www.olark.com/site/2890-624-10-2082/contact" title="Contact us" target="_blank">Questions? Feedback?</a> powered by <a href="http://www.olark.com?welcome" title="Olark live chat software">Olark live chat software</a></noscript>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-11104236-5', 'auto');
+    ga('send', 'pageview');
+
+</script>
+</body>
+</html>
